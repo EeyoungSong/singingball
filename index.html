@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Singing Bowl Cat</title>
+    <link rel="stylesheet" href="styles.css?v=20260812-prop-tabs" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Singing Bowl Cat prototype">
+      <section class="phone">
+        <div class="screen" data-screen="home">
+          <div class="scene scene-day" id="homeScene">
+            <div class="today-badge">
+              <span>오늘 울린 횟수</span>
+              <strong id="todayCount">0</strong>
+              <span>회</span>
+            </div>
+            <button class="icon-button settings-button" type="button" data-view="cats" aria-label="꾸미기">⚙</button>
+            <img class="room-prop clock-prop wall-clock" src="assets/props/wall-clock.png?v=20260812-bowls" alt="" aria-hidden="true" />
+            <img class="room-prop rug-prop floor-rug" id="floorRug" src="assets/props/floor-rug.png?v=20260812-bowls" alt="" aria-hidden="true" />
+            <div class="cat-stage">
+              <button class="cat-button" id="ringButton" type="button" aria-label="싱잉볼 울리기">
+                <img id="catFrame" src="assets/cat-hit/hit_01.png?v=20260812-bowls" alt="고양이가 싱잉볼을 치는 모습" />
+                <span class="ripple-layer" aria-hidden="true"></span>
+                <span class="spark-layer" aria-hidden="true"></span>
+              </button>
+            </div>
+            <nav class="quick-panel" aria-label="빠른 메뉴">
+              <button class="quick-card" type="button" data-view="bowls">
+                <span class="quick-icon">🥣</span>
+                <span>싱잉볼</span>
+              </button>
+              <button class="quick-card" type="button" data-view="backgrounds">
+                <span class="quick-icon">▧</span>
+                <span>배경</span>
+              </button>
+              <button class="quick-card" type="button" data-view="cats">
+                <span class="quick-icon">✦</span>
+                <span>꾸미기</span>
+              </button>
+              <button class="quick-card" type="button" data-view="records">
+                <span class="quick-icon">⌗</span>
+                <span>기록</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        <div class="screen hidden" data-screen="cats">
+          <header class="top-bar">
+            <button class="back-button" type="button" data-view="home" aria-label="뒤로">‹</button>
+            <h1>꾸미기</h1>
+            <button class="done-button" type="button" data-view="home">완료</button>
+          </header>
+          <div class="content">
+            <article class="selected-card">
+              <img src="assets/cat-hit/hit_01.png?v=20260812-bowls" alt="" />
+              <div>
+                <h2>하얀 고양이</h2>
+                <span class="pill">사용 중</span>
+                <p>조용하고 차분해요.</p>
+              </div>
+            </article>
+            <h3>보유한 고양이</h3>
+            <div class="collection-grid">
+              <button class="pet-card selected" type="button">
+                <img src="assets/cat-hit/hit_01.png?v=20260812-bowls" alt="" />
+                <strong>하얀 고양이</strong>
+                <span>사용 중</span>
+              </button>
+              <button class="pet-card locked" type="button">
+                <span class="cat-placeholder gray"></span>
+                <strong>회색 고양이</strong>
+                <span>🔒 0/10</span>
+              </button>
+              <button class="pet-card locked" type="button">
+                <span class="cat-placeholder orange"></span>
+                <strong>치즈 고양이</strong>
+                <span>🔒 0/10</span>
+              </button>
+            </div>
+            <h3>방 소품</h3>
+            <label class="toggle-row">
+              <span>
+                <strong>시계</strong>
+                <small>홈 화면에 벽시계를 배치해요.</small>
+              </span>
+              <input id="clockToggle" type="checkbox" />
+            </label>
+            <label class="toggle-row">
+              <span>
+                <strong>러그</strong>
+                <small>홈 화면 바닥에 선택한 러그를 깔아요.</small>
+              </span>
+              <input id="rugToggle" type="checkbox" />
+            </label>
+            <div class="rug-grid" aria-label="러그 선택">
+              <button class="rug-card selected" type="button" data-rug="floor-rug" aria-pressed="true">
+                <img src="assets/props/floor-rug.png?v=20260812-bowls" alt="" />
+                <span>러그 1</span>
+              </button>
+              <button class="rug-card" type="button" data-rug="floor-rug-02" aria-pressed="false">
+                <img src="assets/props/floor-rug-02.png?v=20260812-bowls" alt="" />
+                <span>러그 2</span>
+              </button>
+              <button class="rug-card" type="button" data-rug="floor-rug-03" aria-pressed="false">
+                <img src="assets/props/floor-rug-03.png?v=20260812-bowls" alt="" />
+                <span>러그 3</span>
+              </button>
+              <button class="rug-card" type="button" data-rug="floor-rug-04" aria-pressed="false">
+                <img src="assets/props/floor-rug-04.png?v=20260812-bowls" alt="" />
+                <span>러그 4</span>
+              </button>
+              <button class="rug-card" type="button" data-rug="floor-rug-05" aria-pressed="false">
+                <img src="assets/props/floor-rug-05.png?v=20260812-bowls" alt="" />
+                <span>러그 5</span>
+              </button>
+              <button class="rug-card" type="button" data-rug="floor-rug-06" aria-pressed="false">
+                <img src="assets/props/floor-rug-06.png?v=20260812-bowls" alt="" />
+                <span>러그 6</span>
+              </button>
+              <button class="rug-card" type="button" data-rug="floor-rug-07" aria-pressed="false">
+                <img src="assets/props/floor-rug-07.png?v=20260812-bowls" alt="" />
+                <span>러그 7</span>
+              </button>
+              <button class="rug-card" type="button" data-rug="floor-rug-08" aria-pressed="false">
+                <img src="assets/props/floor-rug-08.png?v=20260812-bowls" alt="" />
+                <span>러그 8</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="screen hidden" data-screen="bowls">
+          <header class="top-bar">
+            <button class="back-button" type="button" data-view="home" aria-label="뒤로">‹</button>
+            <h1>싱잉볼 선택</h1>
+          </header>
+          <div class="content bowl-list">
+            <button class="bowl-row selected" type="button" data-bowl="hand-hammered">
+              <img class="bowl-thumb" src="assets/bowls/hand-hammered-tibetan.png?v=20260812-bowls" alt="" />
+              <span>
+                <strong>티베탄 싱잉볼</strong>
+                <em>사용 중</em>
+                <small>맑고 긴 울림</small>
+              </span>
+              <b>✓</b>
+            </button>
+            <button class="bowl-row" type="button" data-bowl="polished-brass">
+              <img class="bowl-thumb" src="assets/bowls/polished-brass.png?v=20260812-bowls" alt="" />
+              <span>
+                <strong>브라스 싱잉볼</strong>
+                <small>부드럽고 따뜻한 울림</small>
+              </span>
+              <b></b>
+            </button>
+            <button class="bowl-row" type="button" data-bowl="etched-tibetan">
+              <img class="bowl-thumb" src="assets/bowls/etched-tibetan.png?v=20260812-bowls" alt="" />
+              <span>
+                <strong>에칭 싱잉볼</strong>
+                <small>깊고 안정적인 울림</small>
+              </span>
+              <b></b>
+            </button>
+            <button class="bowl-row locked" type="button" data-bowl="crystal-quartz">
+              <img class="bowl-thumb" src="assets/bowls/crystal-quartz.png?v=20260812-bowls" alt="" />
+              <span>
+                <strong>크리스탈 싱잉볼</strong>
+                <small>추후 해금 예정</small>
+              </span>
+              <b>🔒</b>
+            </button>
+            <button class="bowl-row locked" type="button" data-bowl="full-moon">
+              <img class="bowl-thumb" src="assets/bowls/full-moon.png?v=20260812-bowls" alt="" />
+              <span>
+                <strong>풀문 싱잉볼</strong>
+                <small>추후 해금 예정</small>
+              </span>
+              <b>🔒</b>
+            </button>
+            <button class="bowl-row locked" type="button" data-bowl="antique-jambati">
+              <img class="bowl-thumb" src="assets/bowls/antique-jambati.png?v=20260812-bowls" alt="" />
+              <span>
+                <strong>앤틱 잠바티</strong>
+                <small>추후 해금 예정</small>
+              </span>
+              <b>🔒</b>
+            </button>
+            <aside class="progress-card">
+              <div>
+                <strong>싱잉볼 컬렉션</strong>
+                <span>3 / 6</span>
+              </div>
+              <progress value="3" max="6"></progress>
+            </aside>
+          </div>
+        </div>
+
+        <div class="screen hidden" data-screen="backgrounds">
+          <header class="top-bar">
+            <button class="back-button" type="button" data-view="home" aria-label="뒤로">‹</button>
+            <h1>창문 배경 선택</h1>
+          </header>
+          <div class="content background-grid">
+            <button class="background-card selected" type="button" data-background="day">
+              <span class="background-preview day-preview"></span>
+              <strong>맑은 하늘</strong>
+              <b>✓</b>
+            </button>
+            <button class="background-card" type="button" data-background="night">
+              <span class="background-preview night-preview"></span>
+              <strong>밤하늘</strong>
+            </button>
+            <button class="background-card" type="button" data-background="sea">
+              <span class="background-preview sea-preview"></span>
+              <strong>바닷가</strong>
+            </button>
+            <button class="background-card" type="button" data-background="forest">
+              <span class="background-preview forest-preview"></span>
+              <strong>숲길</strong>
+            </button>
+          </div>
+        </div>
+
+        <div class="screen hidden" data-screen="records">
+          <header class="top-bar">
+            <button class="back-button" type="button" data-view="home" aria-label="뒤로">‹</button>
+            <h1>기록</h1>
+          </header>
+          <div class="content records-view">
+            <div class="stat-grid">
+              <article>
+                <span>오늘</span>
+                <strong id="recordToday">0</strong>
+                <small>회</small>
+              </article>
+              <article>
+                <span>전체 누적</span>
+                <strong id="recordTotal">0</strong>
+                <small>회</small>
+              </article>
+              <article>
+                <span>연속 기록</span>
+                <strong id="streakCount">1</strong>
+                <small>일</small>
+              </article>
+            </div>
+            <h2>최근 기록</h2>
+            <ul class="record-list" id="recordList"></ul>
+            <h2>주간 기록</h2>
+            <div class="week-chart" id="weekChart" aria-label="주간 기록 그래프"></div>
+          </div>
+          <nav class="tab-bar" aria-label="하단 탭">
+            <button type="button" data-view="home">⌂<span>홈</span></button>
+            <button type="button" data-view="bowls">🥣<span>싱잉볼</span></button>
+            <button type="button" data-view="backgrounds">▧<span>배경</span></button>
+            <button class="active" type="button" data-view="records">⌗<span>기록</span></button>
+          </nav>
+        </div>
+      </section>
+    </main>
+    <script src="app.js?v=20260812-bowls"></script>
+  </body>
+</html>
