@@ -1,4 +1,4 @@
-const assetVersion = "20260812-bowls";
+const assetVersion = "20260812-fixed-bowl-position-9";
 
 const rugs = {
   "floor-rug": {
@@ -114,6 +114,7 @@ const weekChart = document.querySelector("#weekChart");
 const clockToggle = document.querySelector("#clockToggle");
 const rugToggle = document.querySelector("#rugToggle");
 const floorRug = document.querySelector("#floorRug");
+const selectedBowlOverlay = document.querySelector("#selectedBowlOverlay");
 const bowlAudio = new Audio(`${bowls[state.selectedBowl].sound}?v=${assetVersion}`);
 bowlAudio.preload = "auto";
 
@@ -290,6 +291,10 @@ function renderBackground() {
 }
 
 function renderBowlSelection() {
+  if (selectedBowlOverlay) {
+    selectedBowlOverlay.src = `${bowls[state.selectedBowl].image}?v=${assetVersion}`;
+  }
+
   document.querySelectorAll(".bowl-row").forEach((row) => {
     const bowl = bowls[row.dataset.bowl];
     const selected = row.dataset.bowl === state.selectedBowl;
