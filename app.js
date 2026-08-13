@@ -1,4 +1,4 @@
-const assetVersion = "20260813-mobile-full";
+const assetVersion = "20260813-bowl-size-105";
 
 const rugs = {
   "floor-rug": {
@@ -292,7 +292,8 @@ function renderBackground() {
 
 function renderBowlSelection() {
   if (selectedBowlOverlay) {
-    selectedBowlOverlay.src = `${bowls[state.selectedBowl].image}?v=${assetVersion}`;
+    const selectedBowl = bowls[state.selectedBowl];
+    selectedBowlOverlay.src = `${selectedBowl.image}?v=${assetVersion}`;
   }
 
   document.querySelectorAll(".bowl-row").forEach((row) => {

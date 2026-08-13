@@ -119,7 +119,7 @@ button {
   z-index: 1;
   content: "";
   pointer-events: none;
-  background: url("assets/backgrounds/room-window-overlay.png?v=20260813-mobile-full") 68% center / cover no-repeat;
+  background: url("assets/backgrounds/room-window-overlay.png?v=20260813-bowl-size-105") 68% center / cover no-repeat;
 }
 
 .scene::before {
@@ -219,6 +219,10 @@ button {
   position: relative;
   width: 310px;
   height: 310px;
+  --bowl-anchor-x: 125px;
+  --bowl-anchor-y: 245px;
+  --bowl-width: 118px;
+  --bowl-height: 80px;
   border: 0;
   padding: 0;
   display: grid;
@@ -240,14 +244,14 @@ button {
 
 .cat-button .selected-bowl-overlay {
   position: absolute;
-  left: 50%;
-  bottom: 68px;
+  left: var(--bowl-anchor-x);
+  top: var(--bowl-anchor-y);
   z-index: 4;
-  width: 112px;
-  height: 76px;
+  width: var(--bowl-width);
+  height: var(--bowl-height);
   object-fit: contain;
   pointer-events: none;
-  transform: translateX(-77%);
+  transform: translate(-50%, -100%);
   filter: drop-shadow(0 8px 10px rgba(74, 48, 26, 0.18));
 }
 
@@ -788,6 +792,10 @@ progress {
   .cat-button {
     width: 270px;
     height: 270px;
+    --bowl-anchor-x: 109px;
+    --bowl-anchor-y: 216px;
+    --bowl-width: 106px;
+    --bowl-height: 71px;
   }
 
   .cat-button img {
