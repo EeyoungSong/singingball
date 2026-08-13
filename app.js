@@ -1,4 +1,4 @@
-const assetVersion = "20260812-fixed-bowl-position-9";
+const assetVersion = "20260813-mobile-full";
 
 const rugs = {
   "floor-rug": {

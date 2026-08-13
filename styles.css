@@ -11,6 +11,7 @@
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   display: grid;
   place-items: center;
@@ -27,6 +28,7 @@ button {
 .app-shell {
   width: min(100vw, 440px);
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 18px;
@@ -42,6 +44,31 @@ button {
   border-radius: 34px;
   background: #fffdf9;
   box-shadow: 0 24px 80px rgba(70, 52, 32, 0.22);
+}
+
+@media (max-width: 480px) {
+  body {
+    display: block;
+    overflow: hidden;
+    background: #fffdf9;
+  }
+
+  .app-shell {
+    width: 100vw;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  .phone {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 
 .screen {
@@ -92,7 +119,7 @@ button {
   z-index: 1;
   content: "";
   pointer-events: none;
-  background: url("assets/backgrounds/room-window-overlay.png?v=20260812-fixed-bowl-position-9") 68% center / cover no-repeat;
+  background: url("assets/backgrounds/room-window-overlay.png?v=20260813-mobile-full") 68% center / cover no-repeat;
 }
 
 .scene::before {
