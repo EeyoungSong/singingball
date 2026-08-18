@@ -188,7 +188,7 @@ button {
   left: 50%;
   bottom: 86px;
   z-index: 2;
-  width: 300px;
+  width: 240px;
   height: auto;
   pointer-events: none;
   transform: translateX(-50%) rotate(2deg);
@@ -209,7 +209,7 @@ button {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 116px;
+  bottom: 98px;
   z-index: 3;
   display: grid;
   place-items: center;
@@ -217,12 +217,12 @@ button {
 
 .cat-button {
   position: relative;
-  width: 310px;
-  height: 310px;
-  --bowl-anchor-x: 125px;
-  --bowl-anchor-y: 245px;
-  --bowl-width: 118px;
-  --bowl-height: 80px;
+  width: 248px;
+  height: 248px;
+  --bowl-anchor-x: 100px;
+  --bowl-anchor-y: 196px;
+  --bowl-width: 94px;
+  --bowl-height: 64px;
   border: 0;
   padding: 0;
   display: grid;
@@ -235,8 +235,8 @@ button {
 .cat-button img {
   position: relative;
   z-index: 3;
-  width: 300px;
-  height: 300px;
+  width: 240px;
+  height: 240px;
   image-rendering: auto;
   object-fit: contain;
   filter: drop-shadow(0 18px 24px rgba(76, 52, 31, 0.16));
@@ -256,8 +256,8 @@ button {
 }
 
 .cat-button.walking #catFrame {
-  width: 184px;
-  height: 270px;
+  width: 147px;
+  height: 216px;
   object-fit: contain;
   transform: translateY(0);
 }
@@ -797,26 +797,26 @@ progress {
   }
 
   .cat-stage {
-    bottom: 94px;
+    bottom: 80px;
   }
 
   .cat-button {
-    width: 270px;
-    height: 270px;
-    --bowl-anchor-x: 109px;
-    --bowl-anchor-y: 216px;
-    --bowl-width: 106px;
-    --bowl-height: 71px;
+    width: 216px;
+    height: 216px;
+    --bowl-anchor-x: 87px;
+    --bowl-anchor-y: 173px;
+    --bowl-width: 85px;
+    --bowl-height: 57px;
   }
 
   .cat-button img {
-    width: 270px;
-    height: 270px;
+    width: 216px;
+    height: 216px;
   }
 
   .cat-button.walking #catFrame {
-    width: 166px;
-    height: 244px;
+    width: 133px;
+    height: 195px;
     transform: translateY(0);
   }
 }
