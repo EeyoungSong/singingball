@@ -1,4 +1,4 @@
-const assetVersion = "20260813-bowl-size-105";
+const assetVersion = "20260819-remove-shelf";
 
 const rugs = {
   "floor-rug": {
@@ -76,6 +76,11 @@ const frames = Array.from({ length: 9 }, (_, index) => {
   return `assets/cat-hit/hit_${frame}.png?v=${assetVersion}`;
 });
 
+const walkFrames = Array.from({ length: 8 }, (_, index) => {
+  const frame = String(index + 1).padStart(2, "0");
+  return `assets/cat-walk/walk_${frame}.png?v=${assetVersion}`;
+});
+
 const state = {
   selectedBowl: localStorage.getItem("selectedBowl") || "hand-hammered",
   selectedBackground: localStorage.getItem("selectedBackground") || "day",
@@ -84,6 +89,7 @@ const state = {
   showRug: localStorage.getItem("showRug") ?? localStorage.getItem("showRoomProps") ?? "true",
   records: JSON.parse(localStorage.getItem("ringRecords") || "[]"),
   animating: false,
+  walking: false,
 };
 
 if (!bowls[state.selectedBowl]?.unlocked) {
@@ -207,6 +213,8 @@ function playHitAnimation() {
   }
 
   state.animating = true;
+  state.walking = false;
+  ringButton.classList.remove("walking");
   ringButton.classList.remove("ringing");
   void ringButton.offsetWidth;
   ringButton.classList.add("ringing");
@@ -225,6 +233,33 @@ function playHitAnimation() {
     ringButton.classList.remove("ringing");
     state.animating = false;
   }, frames.length * 50 + 180);
+}
+
+function playWalkAnimation() {
+  if (state.animating || state.walking) {
+    return;
+  }
+
+  state.walking = true;
+  ringButton.classList.add("walking");
+
+  const sequence = [...walkFrames, ...walkFrames, ...walkFrames];
+  sequence.forEach((src, index) => {
+    window.setTimeout(() => {
+      if (!state.walking || state.animating) {
+        return;
+      }
+      catFrame.src = src;
+    }, index * 95);
+  });
+
+  window.setTimeout(() => {
+    if (!state.animating) {
+      catFrame.src = frames[0];
+    }
+    ringButton.classList.remove("walking");
+    state.walking = false;
+  }, sequence.length * 95 + 120);
 }
 
 function renderRecords() {
@@ -402,3 +437,4 @@ rugToggle?.addEventListener("change", () => {
 ringButton.addEventListener("click", playHitAnimation);
 
 render();
+window.setInterval(playWalkAnimation, 10000);

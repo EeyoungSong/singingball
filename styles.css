@@ -119,7 +119,7 @@ button {
   z-index: 1;
   content: "";
   pointer-events: none;
-  background: url("assets/backgrounds/room-window-overlay.png?v=20260813-bowl-size-105") 68% center / cover no-repeat;
+  background: url("assets/backgrounds/room-window-overlay.png?v=20260819-remove-shelf") 68% center / cover no-repeat;
 }
 
 .scene::before {
@@ -253,6 +253,17 @@ button {
   pointer-events: none;
   transform: translate(-50%, -100%);
   filter: drop-shadow(0 8px 10px rgba(74, 48, 26, 0.18));
+}
+
+.cat-button.walking #catFrame {
+  width: 184px;
+  height: 270px;
+  object-fit: contain;
+  transform: translateY(0);
+}
+
+.cat-button.walking .selected-bowl-overlay {
+  opacity: 0;
 }
 
 .cat-button:active #catFrame {
@@ -801,5 +812,11 @@ progress {
   .cat-button img {
     width: 270px;
     height: 270px;
+  }
+
+  .cat-button.walking #catFrame {
+    width: 166px;
+    height: 244px;
+    transform: translateY(0);
   }
 }
