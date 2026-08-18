@@ -1,4 +1,4 @@
-const assetVersion = "20260813-bowl-size-105";
+const assetVersion = "20260819-radio-sheet-12";
 
 const rugs = {
   "floor-rug": {
@@ -35,6 +35,21 @@ const rugs = {
   },
 };
 
+const radios = {
+  "radio-01": { name: "라디오 1", image: "assets/props/radios/radio_01.png" },
+  "radio-02": { name: "라디오 2", image: "assets/props/radios/radio_02.png" },
+  "radio-03": { name: "라디오 3", image: "assets/props/radios/radio_03.png" },
+  "radio-04": { name: "라디오 4", image: "assets/props/radios/radio_04.png" },
+  "radio-05": { name: "라디오 5", image: "assets/props/radios/radio_05.png" },
+  "radio-06": { name: "라디오 6", image: "assets/props/radios/radio_06.png" },
+  "radio-07": { name: "라디오 7", image: "assets/props/radios/radio_07.png" },
+  "radio-08": { name: "라디오 8", image: "assets/props/radios/radio_08.png" },
+  "radio-09": { name: "라디오 9", image: "assets/props/radios/radio_09.png" },
+  "radio-10": { name: "라디오 10", image: "assets/props/radios/radio_10.png" },
+  "radio-11": { name: "라디오 11", image: "assets/props/radios/radio_11.png" },
+  "radio-12": { name: "라디오 12", image: "assets/props/radios/radio_12.png" },
+};
+
 const bowls = {
   "hand-hammered": {
     name: "티베탄 싱잉볼",
@@ -57,17 +72,20 @@ const bowls = {
   "crystal-quartz": {
     name: "크리스탈 싱잉볼",
     image: "assets/bowls/crystal-quartz.png",
-    unlocked: false,
+    sound: "assets/sounds/bowl-crystal-quartz.mp3",
+    unlocked: true,
   },
   "full-moon": {
     name: "풀문 싱잉볼",
     image: "assets/bowls/full-moon.png",
-    unlocked: false,
+    sound: "assets/sounds/bowl-full-moon.mp3",
+    unlocked: true,
   },
   "antique-jambati": {
     name: "앤틱 잠바티",
     image: "assets/bowls/antique-jambati.png",
-    unlocked: false,
+    sound: "assets/sounds/bowl-antique-jambati.mp3",
+    unlocked: true,
   },
 };
 
@@ -76,14 +94,32 @@ const frames = Array.from({ length: 9 }, (_, index) => {
   return `assets/cat-hit/hit_${frame}.png?v=${assetVersion}`;
 });
 
+const standFrame = `assets/cat-walk/stand.png?v=${assetVersion}`;
+const walkFrames = [
+  `assets/cat-walk/walk-a.png?v=${assetVersion}`,
+  `assets/cat-walk/walk-b.png?v=${assetVersion}`,
+];
+
 const state = {
   selectedBowl: localStorage.getItem("selectedBowl") || "hand-hammered",
   selectedBackground: localStorage.getItem("selectedBackground") || "day",
   selectedRug: localStorage.getItem("selectedRug") || "floor-rug",
+  selectedRadio: localStorage.getItem("selectedRadio") || "radio-01",
   showClock: localStorage.getItem("showClock") ?? localStorage.getItem("showRoomProps") ?? "true",
   showRug: localStorage.getItem("showRug") ?? localStorage.getItem("showRoomProps") ?? "true",
+  showRadio: localStorage.getItem("showRadio") ?? "true",
   records: JSON.parse(localStorage.getItem("ringRecords") || "[]"),
   animating: false,
+  walking: false,
+  catOffsetX: 0,
+  catOffsetY: 0,
+  draggingCat: false,
+  catDragStartX: 0,
+  catDragStartY: 0,
+  catDragStartOffsetX: 0,
+  catDragStartOffsetY: 0,
+  catDragged: false,
+  suppressNextHit: false,
 };
 
 if (!bowls[state.selectedBowl]?.unlocked) {
@@ -96,6 +132,11 @@ if (!rugs[state.selectedRug]) {
   localStorage.setItem("selectedRug", state.selectedRug);
 }
 
+if (!radios[state.selectedRadio]) {
+  state.selectedRadio = "radio-01";
+  localStorage.setItem("selectedRadio", state.selectedRadio);
+}
+
 if (state.selectedBackground === "room-window") {
   state.selectedBackground = "day";
   localStorage.setItem("selectedBackground", state.selectedBackground);
@@ -104,6 +145,7 @@ if (state.selectedBackground === "room-window") {
 const screens = document.querySelectorAll(".screen");
 const catFrame = document.querySelector("#catFrame");
 const ringButton = document.querySelector("#ringButton");
+const catStage = document.querySelector(".cat-stage");
 const homeScene = document.querySelector("#homeScene");
 const todayCount = document.querySelector("#todayCount");
 const recordToday = document.querySelector("#recordToday");
@@ -113,12 +155,22 @@ const recordList = document.querySelector("#recordList");
 const weekChart = document.querySelector("#weekChart");
 const clockToggle = document.querySelector("#clockToggle");
 const rugToggle = document.querySelector("#rugToggle");
+const radioToggle = document.querySelector("#radioToggle");
 const floorRug = document.querySelector("#floorRug");
+const radioProp = document.querySelector("#radioProp");
 const selectedBowlOverlay = document.querySelector("#selectedBowlOverlay");
 const bowlAudio = new Audio(`${bowls[state.selectedBowl].sound}?v=${assetVersion}`);
 bowlAudio.preload = "auto";
+const walkTimers = [];
+const hitTestCanvas = document.createElement("canvas");
+const hitTestContext = hitTestCanvas.getContext("2d", { willReadFrequently: true });
 
 frames.forEach((src) => {
+  const image = new Image();
+  image.src = src;
+});
+
+[standFrame, ...walkFrames].forEach((src) => {
   const image = new Image();
   image.src = src;
 });
@@ -126,6 +178,11 @@ frames.forEach((src) => {
 Object.values(rugs).forEach((rug) => {
   const image = new Image();
   image.src = `${rug.image}?v=${assetVersion}`;
+});
+
+Object.values(radios).forEach((radio) => {
+  const image = new Image();
+  image.src = `${radio.image}?v=${assetVersion}`;
 });
 
 Object.values(bowls).forEach((bowl) => {
@@ -207,6 +264,9 @@ function playHitAnimation() {
   }
 
   state.animating = true;
+  state.walking = false;
+  clearWalkTimers();
+  ringButton.classList.remove("walking");
   ringButton.classList.remove("ringing");
   void ringButton.offsetWidth;
   ringButton.classList.add("ringing");
@@ -225,6 +285,238 @@ function playHitAnimation() {
     ringButton.classList.remove("ringing");
     state.animating = false;
   }, frames.length * 50 + 180);
+}
+
+function playWalkAnimation() {
+  if (state.animating || !state.walking) {
+    return;
+  }
+
+  catFrame.src = standFrame;
+
+  const startTimer = window.setTimeout(() => {
+    let frameIndex = 0;
+    catFrame.src = walkFrames[frameIndex];
+
+    const loopTimer = window.setInterval(() => {
+      if (!state.walking || state.animating) {
+        window.clearInterval(loopTimer);
+        return;
+      }
+
+      frameIndex = (frameIndex + 1) % walkFrames.length;
+      catFrame.src = walkFrames[frameIndex];
+    }, 120);
+
+    walkTimers.push(loopTimer);
+  }, 70);
+
+  walkTimers.push(startTimer);
+}
+
+function clearWalkTimers() {
+  while (walkTimers.length > 0) {
+    window.clearTimeout(walkTimers.pop());
+  }
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function imageHasOpaquePixelAt(image, event) {
+  if (!image || !hitTestContext || !image.complete || image.naturalWidth === 0 || image.naturalHeight === 0) {
+    return false;
+  }
+
+  const rect = image.getBoundingClientRect();
+  const imageRatio = image.naturalWidth / image.naturalHeight;
+  const rectRatio = rect.width / rect.height;
+  let contentWidth = rect.width;
+  let contentHeight = rect.height;
+  let contentLeft = rect.left;
+  let contentTop = rect.top;
+
+  if (rectRatio > imageRatio) {
+    contentWidth = rect.height * imageRatio;
+    contentLeft = rect.left + (rect.width - contentWidth) / 2;
+  } else if (rectRatio < imageRatio) {
+    contentHeight = rect.width / imageRatio;
+    contentTop = rect.top + (rect.height - contentHeight) / 2;
+  }
+
+  const localX = event.clientX - contentLeft;
+  const localY = event.clientY - contentTop;
+
+  if (localX < 0 || localY < 0 || localX > contentWidth || localY > contentHeight) {
+    return false;
+  }
+
+  const pixelX = Math.floor((localX / contentWidth) * image.naturalWidth);
+  const pixelY = Math.floor((localY / contentHeight) * image.naturalHeight);
+
+  hitTestCanvas.width = image.naturalWidth;
+  hitTestCanvas.height = image.naturalHeight;
+  hitTestContext.clearRect(0, 0, hitTestCanvas.width, hitTestCanvas.height);
+  hitTestContext.drawImage(image, 0, 0);
+
+  return hitTestContext.getImageData(pixelX, pixelY, 1, 1).data[3] > 24;
+}
+
+function isCatBodyHit(event) {
+  return imageHasOpaquePixelAt(catFrame, event) || imageHasOpaquePixelAt(selectedBowlOverlay, event);
+}
+
+function getCatOffsetLimits() {
+  const sceneRect = homeScene.getBoundingClientRect();
+  const stageRect = catStage.getBoundingClientRect();
+  const catWidth = ringButton.offsetWidth || 248;
+  const catHeight = ringButton.offsetHeight || 248;
+  const currentCenterY = stageRect.top - sceneRect.top + stageRect.height / 2;
+  const defaultCenterY = currentCenterY - state.catOffsetY;
+  const minCenterY = 150;
+  const maxCenterY = sceneRect.height - 154;
+
+  return {
+    maxX: Math.max(0, (sceneRect.width - catWidth * 0.65) / 2),
+    minY: minCenterY - defaultCenterY,
+    maxY: maxCenterY - defaultCenterY - catHeight * 0.12,
+  };
+}
+
+function getCatOffsetForEvent(event) {
+  const sceneRect = homeScene.getBoundingClientRect();
+  const limits = getCatOffsetLimits();
+  const clickX = event.clientX - sceneRect.left;
+  const clickY = event.clientY - sceneRect.top;
+  const stageRect = catStage.getBoundingClientRect();
+  const currentCenterY = stageRect.top - sceneRect.top + stageRect.height / 2;
+  const defaultCenterY = currentCenterY - state.catOffsetY;
+
+  return {
+    x: clamp(clickX - sceneRect.width / 2, -limits.maxX, limits.maxX),
+    y: clamp(clickY - defaultCenterY, limits.minY, limits.maxY),
+  };
+}
+
+function getCatDragOffset(event) {
+  const limits = getCatOffsetLimits();
+  const nextOffsetX = state.catDragStartOffsetX + event.clientX - state.catDragStartX;
+  const nextOffsetY = state.catDragStartOffsetY + event.clientY - state.catDragStartY;
+
+  return {
+    x: clamp(nextOffsetX, -limits.maxX, limits.maxX),
+    y: clamp(nextOffsetY, limits.minY, limits.maxY),
+  };
+}
+
+function walkCatTo(event, options = {}) {
+  if (state.animating || state.walking || state.suppressNextHit || !homeScene || !catStage) {
+    return;
+  }
+
+  if (!options.allowControlTarget && event.target.closest("button, input, label, nav, .today-badge")) {
+    return;
+  }
+
+  const targetOffset = getCatOffsetForEvent(event);
+  const distanceX = targetOffset.x - state.catOffsetX;
+  const distanceY = targetOffset.y - state.catOffsetY;
+  const distance = Math.hypot(distanceX, distanceY);
+
+  if (distance < 8) {
+    return;
+  }
+
+  clearWalkTimers();
+  state.walking = true;
+  ringButton.classList.add("walking");
+  ringButton.style.setProperty("--cat-direction", distanceX > 0 ? "-1" : "1");
+
+  const duration = clamp(distance * 8, 480, 1600);
+  catStage.style.setProperty("--cat-walk-duration", `${duration}ms`);
+  catStage.style.setProperty("--cat-offset-x", `${targetOffset.x}px`);
+  catStage.style.setProperty("--cat-offset-y", `${targetOffset.y}px`);
+  state.catOffsetX = targetOffset.x;
+  state.catOffsetY = targetOffset.y;
+  playWalkAnimation();
+
+  const finishTimer = window.setTimeout(() => {
+    if (!state.animating) {
+      catFrame.src = standFrame;
+    }
+    const sitTimer = window.setTimeout(() => {
+      if (!state.animating) {
+        catFrame.src = frames[0];
+      }
+      clearWalkTimers();
+    }, 70);
+    walkTimers.push(sitTimer);
+    ringButton.classList.remove("walking");
+    state.walking = false;
+  }, duration + 120);
+  walkTimers.push(finishTimer);
+}
+
+function startCatDrag(event) {
+  if (state.animating || !catStage || !homeScene) {
+    return;
+  }
+
+  if (!isCatBodyHit(event)) {
+    return;
+  }
+
+  state.draggingCat = true;
+  state.catDragged = false;
+  state.catDragStartX = event.clientX;
+  state.catDragStartY = event.clientY;
+  state.catDragStartOffsetX = state.catOffsetX;
+  state.catDragStartOffsetY = state.catOffsetY;
+  clearWalkTimers();
+  state.walking = false;
+  ringButton.classList.remove("walking");
+  catFrame.src = frames[0];
+  catStage.style.setProperty("--cat-walk-duration", "0ms");
+  ringButton.setPointerCapture?.(event.pointerId);
+}
+
+function dragCat(event) {
+  if (!state.draggingCat || state.animating || !catStage) {
+    return;
+  }
+
+  const nextOffset = getCatDragOffset(event);
+  const moved = Math.hypot(event.clientX - state.catDragStartX, event.clientY - state.catDragStartY);
+
+  if (moved > 6) {
+    state.catDragged = true;
+    state.suppressNextHit = true;
+  }
+
+  if (state.catDragged) {
+    state.catOffsetX = nextOffset.x;
+    state.catOffsetY = nextOffset.y;
+    catStage.style.setProperty("--cat-offset-x", `${nextOffset.x}px`);
+    catStage.style.setProperty("--cat-offset-y", `${nextOffset.y}px`);
+  }
+}
+
+function finishCatDrag(event) {
+  if (!state.draggingCat) {
+    return;
+  }
+
+  state.draggingCat = false;
+  ringButton.releasePointerCapture?.(event.pointerId);
+
+  if (!state.catDragged) {
+    return;
+  }
+
+  window.setTimeout(() => {
+    state.suppressNextHit = false;
+  }, 0);
 }
 
 function renderRecords() {
@@ -324,12 +616,20 @@ function renderRoomProps() {
     floorRug.src = `${rugs[state.selectedRug].image}?v=${assetVersion}`;
   }
 
+  if (radioProp) {
+    radioProp.src = `${radios[state.selectedRadio].image}?v=${assetVersion}`;
+  }
+
   document.querySelectorAll(".clock-prop").forEach((prop) => {
     prop.classList.toggle("hidden", state.showClock !== "true");
   });
 
   document.querySelectorAll(".rug-prop").forEach((prop) => {
     prop.classList.toggle("hidden", state.showRug !== "true");
+  });
+
+  document.querySelectorAll(".radio-prop").forEach((prop) => {
+    prop.classList.toggle("hidden", state.showRadio !== "true");
   });
 
   if (clockToggle) {
@@ -340,8 +640,18 @@ function renderRoomProps() {
     rugToggle.checked = state.showRug === "true";
   }
 
+  if (radioToggle) {
+    radioToggle.checked = state.showRadio === "true";
+  }
+
   document.querySelectorAll(".rug-card").forEach((card) => {
     const selected = card.dataset.rug === state.selectedRug;
+    card.classList.toggle("selected", selected);
+    card.setAttribute("aria-pressed", String(selected));
+  });
+
+  document.querySelectorAll(".radio-card").forEach((card) => {
+    const selected = card.dataset.radio === state.selectedRadio;
     card.classList.toggle("selected", selected);
     card.setAttribute("aria-pressed", String(selected));
   });
@@ -387,6 +697,16 @@ document.querySelectorAll("[data-rug]").forEach((button) => {
   });
 });
 
+document.querySelectorAll("[data-radio]").forEach((button) => {
+  button.addEventListener("click", () => {
+    state.selectedRadio = button.dataset.radio;
+    state.showRadio = "true";
+    localStorage.setItem("selectedRadio", state.selectedRadio);
+    localStorage.setItem("showRadio", state.showRadio);
+    render();
+  });
+});
+
 clockToggle?.addEventListener("change", () => {
   state.showClock = String(clockToggle.checked);
   localStorage.setItem("showClock", state.showClock);
@@ -399,6 +719,33 @@ rugToggle?.addEventListener("change", () => {
   render();
 });
 
-ringButton.addEventListener("click", playHitAnimation);
+radioToggle?.addEventListener("change", () => {
+  state.showRadio = String(radioToggle.checked);
+  localStorage.setItem("showRadio", state.showRadio);
+  render();
+});
+
+ringButton.addEventListener("pointerdown", startCatDrag);
+ringButton.addEventListener("pointermove", dragCat);
+ringButton.addEventListener("pointerup", finishCatDrag);
+ringButton.addEventListener("pointercancel", finishCatDrag);
+
+ringButton.addEventListener("click", (event) => {
+  if (state.suppressNextHit) {
+    event.preventDefault();
+    state.suppressNextHit = false;
+    return;
+  }
+
+  if (!isCatBodyHit(event)) {
+    walkCatTo(event, { allowControlTarget: true });
+    return;
+  }
+
+  event.stopPropagation();
+  playHitAnimation();
+});
+
+homeScene.addEventListener("click", walkCatTo);
 
 render();
