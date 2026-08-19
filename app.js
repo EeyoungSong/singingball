@@ -1,4 +1,4 @@
-const assetVersion = "20260820-radio-placement-map";
+const assetVersion = "20260820-clock-3col-no-check";
 
 const backgroundIds = [
   "room-custom-01",
@@ -9,10 +9,6 @@ const backgroundIds = [
 ];
 
 const rugs = {
-  "floor-rug": {
-    name: "러그 1",
-    image: "assets/props/floor-rug.png",
-  },
   "floor-rug-02": {
     name: "러그 2",
     image: "assets/props/floor-rug-02.png",
@@ -33,14 +29,20 @@ const rugs = {
     name: "러그 6",
     image: "assets/props/floor-rug-06.png",
   },
-  "floor-rug-07": {
-    name: "러그 7",
-    image: "assets/props/floor-rug-07.png",
-  },
   "floor-rug-08": {
     name: "러그 8",
     image: "assets/props/floor-rug-08.png",
   },
+};
+
+const clocks = {
+  "wall-clock": { name: "시계 1", image: "assets/props/wall-clock.png" },
+  "clock-01": { name: "시계 2", image: "assets/props/clocks/clock_01.png" },
+  "clock-02": { name: "시계 3", image: "assets/props/clocks/clock_02.png" },
+  "clock-03": { name: "시계 4", image: "assets/props/clocks/clock_03.png" },
+  "clock-04": { name: "시계 5", image: "assets/props/clocks/clock_04.png" },
+  "clock-05": { name: "시계 6", image: "assets/props/clocks/clock_05.png" },
+  "clock-06": { name: "시계 7", image: "assets/props/clocks/clock_06.png" },
 };
 
 const radios = {
@@ -54,8 +56,6 @@ const radios = {
   "radio-08": { name: "라디오 8", image: "assets/props/radios/radio_08.png", placedImage: "assets/props/radios/placed/radio_08.png" },
   "radio-09": { name: "라디오 9", image: "assets/props/radios/radio_09.png", placedImage: "assets/props/radios/placed/radio_09.png" },
   "radio-10": { name: "라디오 10", image: "assets/props/radios/radio_10.png", placedImage: "assets/props/radios/placed/radio_10.png" },
-  "radio-11": { name: "라디오 11", image: "assets/props/radios/radio_11.png" },
-  "radio-12": { name: "라디오 12", image: "assets/props/radios/radio_12.png" },
 };
 
 const bowls = {
@@ -110,8 +110,9 @@ const walkFrames = [
 const state = {
   selectedBowl: localStorage.getItem("selectedBowl") || "hand-hammered",
   selectedBackground: localStorage.getItem("selectedBackground") || "room-custom-01",
-  selectedRug: localStorage.getItem("selectedRug") || "floor-rug",
-  selectedRadio: localStorage.getItem("selectedRadio") || "radio-01",
+  selectedRug: localStorage.getItem("selectedRug") ?? "floor-rug-02",
+  selectedRadio: localStorage.getItem("selectedRadio") ?? "radio-01",
+  selectedClock: localStorage.getItem("selectedClock") ?? "wall-clock",
   selectedDecorTab: localStorage.getItem("selectedDecorTab") || "rugs",
   showClock: localStorage.getItem("showClock") ?? localStorage.getItem("showRoomProps") ?? "true",
   showRug: localStorage.getItem("showRug") ?? localStorage.getItem("showRoomProps") ?? "true",
@@ -135,14 +136,19 @@ if (!bowls[state.selectedBowl]?.unlocked) {
   localStorage.setItem("selectedBowl", state.selectedBowl);
 }
 
-if (!rugs[state.selectedRug]) {
-  state.selectedRug = "floor-rug";
+if (state.selectedRug && !rugs[state.selectedRug]) {
+  state.selectedRug = "floor-rug-02";
   localStorage.setItem("selectedRug", state.selectedRug);
 }
 
-if (!radios[state.selectedRadio]) {
+if (state.selectedRadio && !radios[state.selectedRadio]) {
   state.selectedRadio = "radio-01";
   localStorage.setItem("selectedRadio", state.selectedRadio);
+}
+
+if (state.selectedClock && !clocks[state.selectedClock]) {
+  state.selectedClock = "wall-clock";
+  localStorage.setItem("selectedClock", state.selectedClock);
 }
 
 if (state.selectedBackground === "room-window" || !backgroundIds.includes(state.selectedBackground)) {
@@ -160,15 +166,12 @@ const catFrame = document.querySelector("#catFrame");
 const ringButton = document.querySelector("#ringButton");
 const catStage = document.querySelector(".cat-stage");
 const homeScene = document.querySelector("#homeScene");
-const todayCount = document.querySelector("#todayCount");
 const recordToday = document.querySelector("#recordToday");
 const recordTotal = document.querySelector("#recordTotal");
 const streakCount = document.querySelector("#streakCount");
 const recordList = document.querySelector("#recordList");
 const weekChart = document.querySelector("#weekChart");
-const clockToggle = document.querySelector("#clockToggle");
-const rugToggle = document.querySelector("#rugToggle");
-const radioToggle = document.querySelector("#radioToggle");
+const clockProp = document.querySelector("#clockProp");
 const floorRug = document.querySelector("#floorRug");
 const radioProp = document.querySelector("#radioProp");
 const selectedBowlOverlay = document.querySelector("#selectedBowlOverlay");
@@ -188,6 +191,11 @@ frames.forEach((src) => {
 [standFrame, ...walkFrames].forEach((src) => {
   const image = new Image();
   image.src = src;
+});
+
+Object.values(clocks).forEach((clock) => {
+  const image = new Image();
+  image.src = `${clock.image}?v=${assetVersion}`;
 });
 
 Object.values(rugs).forEach((rug) => {
@@ -435,7 +443,7 @@ function walkCatTo(event, options = {}) {
     return;
   }
 
-  if (!options.allowControlTarget && event.target.closest("button, input, label, nav, .today-badge")) {
+  if (!options.allowControlTarget && event.target.closest("button, input, label, nav")) {
     return;
   }
 
@@ -541,7 +549,6 @@ function finishCatDrag(event) {
 
 function renderRecords() {
   const today = recordsForDate(todayKey()).length;
-  todayCount.textContent = today;
   recordToday.textContent = today;
   recordTotal.textContent = state.records.length;
   streakCount.textContent = state.records.length > 0 ? "1" : "0";
@@ -631,48 +638,52 @@ function renderBowlSelection() {
 }
 
 function renderRoomProps() {
-  if (floorRug) {
+  if (clockProp && clocks[state.selectedClock]) {
+    clockProp.src = `${clocks[state.selectedClock].image}?v=${assetVersion}`;
+  }
+
+  if (floorRug && rugs[state.selectedRug]) {
     floorRug.src = `${rugs[state.selectedRug].image}?v=${assetVersion}`;
   }
 
-  if (radioProp) {
+  if (radioProp && radios[state.selectedRadio]) {
     const selectedRadio = radios[state.selectedRadio];
     radioProp.src = `${selectedRadio.placedImage || selectedRadio.image}?v=${assetVersion}`;
   }
 
   document.querySelectorAll(".clock-prop").forEach((prop) => {
-    prop.classList.toggle("hidden", state.showClock !== "true");
+    prop.classList.toggle("hidden", state.showClock !== "true" || !clocks[state.selectedClock]);
   });
 
   document.querySelectorAll(".rug-prop").forEach((prop) => {
-    prop.classList.toggle("hidden", state.showRug !== "true");
+    prop.classList.toggle("hidden", state.showRug !== "true" || !rugs[state.selectedRug]);
   });
 
   document.querySelectorAll(".radio-prop").forEach((prop) => {
-    prop.classList.toggle("hidden", state.showRadio !== "true");
+    prop.classList.toggle("hidden", state.showRadio !== "true" || !radios[state.selectedRadio]);
   });
 
-  if (clockToggle) {
-    clockToggle.checked = state.showClock === "true";
-  }
+  document.querySelectorAll(".clock-card").forEach((card) => {
+    const selected = state.showClock === "true" && card.dataset.clock === state.selectedClock;
+    card.classList.toggle("selected", selected);
+    card.setAttribute("aria-pressed", String(selected));
 
-  if (rugToggle) {
-    rugToggle.checked = state.showRug === "true";
-  }
-
-  if (radioToggle) {
-    radioToggle.checked = state.showRadio === "true";
-  }
+    const clock = clocks[card.dataset.clock];
+    const image = card.querySelector("img");
+    if (image && clock) {
+      image.src = `${clock.image}?v=${assetVersion}`;
+    }
+  });
 
   document.querySelectorAll(".rug-card").forEach((card) => {
-    const selected = card.dataset.rug === state.selectedRug;
+    const selected = state.showRug === "true" && card.dataset.rug === state.selectedRug;
     card.classList.toggle("selected", selected);
     card.setAttribute("aria-pressed", String(selected));
   });
 
   document.querySelectorAll(".radio-card").forEach((card) => {
     const radio = radios[card.dataset.radio];
-    const selected = card.dataset.radio === state.selectedRadio;
+    const selected = state.showRadio === "true" && card.dataset.radio === state.selectedRadio;
     card.classList.toggle("selected", selected);
     card.setAttribute("aria-pressed", String(selected));
 
@@ -736,40 +747,35 @@ document.querySelectorAll("[data-bowl]").forEach((button) => {
 
 document.querySelectorAll("[data-rug]").forEach((button) => {
   button.addEventListener("click", () => {
-    state.selectedRug = button.dataset.rug;
-    state.showRug = "true";
+    const selected = state.showRug === "true" && state.selectedRug === button.dataset.rug;
+    state.selectedRug = selected ? "" : button.dataset.rug;
+    state.showRug = selected ? "false" : "true";
     localStorage.setItem("selectedRug", state.selectedRug);
     localStorage.setItem("showRug", state.showRug);
     render();
   });
 });
 
-document.querySelectorAll("[data-radio]").forEach((button) => {
+document.querySelectorAll("[data-clock]").forEach((button) => {
   button.addEventListener("click", () => {
-    state.selectedRadio = button.dataset.radio;
-    state.showRadio = "true";
-    localStorage.setItem("selectedRadio", state.selectedRadio);
-    localStorage.setItem("showRadio", state.showRadio);
+    const selected = state.showClock === "true" && state.selectedClock === button.dataset.clock;
+    state.selectedClock = selected ? "" : button.dataset.clock;
+    state.showClock = selected ? "false" : "true";
+    localStorage.setItem("selectedClock", state.selectedClock);
+    localStorage.setItem("showClock", state.showClock);
     render();
   });
 });
 
-clockToggle?.addEventListener("change", () => {
-  state.showClock = String(clockToggle.checked);
-  localStorage.setItem("showClock", state.showClock);
-  render();
-});
-
-rugToggle?.addEventListener("change", () => {
-  state.showRug = String(rugToggle.checked);
-  localStorage.setItem("showRug", state.showRug);
-  render();
-});
-
-radioToggle?.addEventListener("change", () => {
-  state.showRadio = String(radioToggle.checked);
-  localStorage.setItem("showRadio", state.showRadio);
-  render();
+document.querySelectorAll("[data-radio]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const selected = state.showRadio === "true" && state.selectedRadio === button.dataset.radio;
+    state.selectedRadio = selected ? "" : button.dataset.radio;
+    state.showRadio = selected ? "false" : "true";
+    localStorage.setItem("selectedRadio", state.selectedRadio);
+    localStorage.setItem("showRadio", state.showRadio);
+    render();
+  });
 });
 
 ringButton.addEventListener("pointerdown", startCatDrag);
