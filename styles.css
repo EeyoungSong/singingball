@@ -80,7 +80,7 @@ button {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .scene {
@@ -90,27 +90,35 @@ button {
   background: var(--window-view-image, #fff8eb) 68% center / cover no-repeat;
 }
 
+.scene-room-custom-01 {
+  --window-view-image: url("assets/backgrounds/room-custom-01.png?v=20260820-radio-placement-map");
+}
+
+.scene-room-custom-02 {
+  --window-view-image: url("assets/backgrounds/room-custom-02.png?v=20260820-radio-placement-map");
+}
+
+.scene-room-custom-03 {
+  --window-view-image: url("assets/backgrounds/room-custom-03.png?v=20260820-radio-placement-map");
+}
+
 .scene-day {
-  --window-view-image:
-    linear-gradient(90deg, rgba(251, 237, 218, 0.95) 0 9%, transparent 9% 91%, rgba(251, 237, 218, 0.95) 91%),
-    radial-gradient(ellipse at 50% 63%, rgba(255, 245, 219, 0.9) 0 16%, transparent 17%),
-    linear-gradient(180deg, #d5eefc 0 38%, #9cd8ef 39% 52%, #efd4aa 53% 58%, #dcc19a 59% 100%);
+  --window-view-image: linear-gradient(180deg, #ffe7bd 0%, #ffd995 42%, #e99b69 100%);
 }
 
 .scene-night {
   --window-view-image:
-    linear-gradient(90deg, rgba(239, 226, 209, 0.95) 0 9%, transparent 9% 91%, rgba(239, 226, 209, 0.95) 91%),
-    radial-gradient(circle at 68% 20%, #fff6c9 0 5%, transparent 6%),
-    linear-gradient(180deg, #11233e 0 42%, #355077 43% 60%, #c9a980 61% 100%);
+    radial-gradient(circle at 72% 24%, rgba(255, 244, 208, 0.75) 0 7%, transparent 8%),
+    linear-gradient(180deg, #253c67 0%, #263256 44%, #7d5562 100%);
   color: #1f1712;
 }
 
 .scene-sea {
-  --window-view-image: url("assets/backgrounds/sea-day.png?v=20260811-sea-bg");
+  --window-view-image: url("assets/backgrounds/sea-day.png?v=20260820-radio-placement-map");
 }
 
 .scene-forest {
-  --window-view-image: url("assets/backgrounds/forest-day.png?v=20260811-forest-bg");
+  --window-view-image: url("assets/backgrounds/forest-day.png?v=20260820-radio-placement-map");
 }
 
 .scene::after {
@@ -119,7 +127,7 @@ button {
   z-index: 1;
   content: "";
   pointer-events: none;
-  background: url("assets/backgrounds/room-window-overlay.png?v=20260819-radio-sheet-12") 68% center / cover no-repeat;
+  background: url("assets/backgrounds/room-window-overlay.png?v=20260820-radio-placement-map") 68% center / cover no-repeat;
 }
 
 .scene::before {
@@ -197,16 +205,16 @@ button {
 
 .floor-radio {
   position: absolute;
-  left: 16px;
-  bottom: 204px;
+  right: 20px;
+  bottom: 194px;
   z-index: 2;
-  width: 70px;
-  height: 62px;
+  width: 58px;
+  height: 66px;
   object-fit: contain;
   pointer-events: none;
-  transform: perspective(140px) rotateY(24deg) rotateZ(-10deg) scale(1.08);
-  transform-origin: 18% 50%;
-  filter: drop-shadow(0 4px 5px rgba(91, 66, 42, 0.12));
+  transform: rotateZ(2deg);
+  transform-origin: 50% 80%;
+  filter: drop-shadow(0 5px 6px rgba(91, 66, 42, 0.14));
 }
 
 .icon-button,
@@ -334,7 +342,7 @@ button {
   bottom: 32px;
   z-index: 6;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 
@@ -458,6 +466,42 @@ small {
   grid-template-columns: repeat(3, 1fr);
 }
 
+.decor-content {
+  padding-top: 12px;
+}
+
+.decor-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: -2px 0 14px;
+  padding: 6px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  border: 1px solid #eee5d9;
+  border-radius: 16px;
+  background: rgba(255, 250, 243, 0.94);
+  box-shadow: 0 12px 28px rgba(102, 74, 42, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.decor-tab {
+  min-height: 38px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #75685d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.decor-tab.active {
+  background: #fff;
+  color: #241914;
+  box-shadow: 0 8px 18px rgba(102, 74, 42, 0.1);
+}
+
 .pet-card {
   min-height: 154px;
   padding: 10px;
@@ -542,6 +586,42 @@ small {
   border-radius: 16px;
   background: #fffaf3;
   box-shadow: 0 10px 28px rgba(102, 74, 42, 0.06);
+}
+
+.single-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.decor-item {
+  min-height: 150px;
+  padding: 12px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px solid #4c89ff;
+  border-radius: 16px;
+  background: #fbfdff;
+  box-shadow: 0 10px 28px rgba(102, 74, 42, 0.06);
+}
+
+.decor-item img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  filter: drop-shadow(0 7px 10px rgba(91, 66, 42, 0.12));
+}
+
+.decor-item strong,
+.decor-item span {
+  font-size: 13px;
+}
+
+.decor-item span {
+  color: #2f75e9;
+  font-weight: 800;
 }
 
 .rug-card img,
@@ -662,24 +742,34 @@ progress {
   border-radius: 14px;
 }
 
+.room-custom-01-preview {
+  background: url("assets/backgrounds/room-custom-01.png?v=20260820-radio-placement-map") center / cover no-repeat;
+}
+
+.room-custom-02-preview {
+  background: url("assets/backgrounds/room-custom-02.png?v=20260820-radio-placement-map") center / cover no-repeat;
+}
+
+.room-custom-03-preview {
+  background: url("assets/backgrounds/room-custom-03.png?v=20260820-radio-placement-map") center / cover no-repeat;
+}
+
 .day-preview {
-  background:
-    linear-gradient(90deg, rgba(245, 225, 199, 0.92) 0 18%, transparent 18%),
-    linear-gradient(180deg, #dbf3ff 0 45%, #a9dff1 46% 58%, #dfc09a 59% 100%);
+  background: linear-gradient(180deg, #ffe7bd 0%, #ffd995 42%, #e99b69 100%);
 }
 
 .night-preview {
   background:
-    radial-gradient(circle at 68% 20%, #fff6c9 0 7%, transparent 8%),
-    linear-gradient(180deg, #0d1a32 0 54%, #34476d 55% 68%, #a88965 69% 100%);
+    radial-gradient(circle at 72% 24%, rgba(255, 244, 208, 0.75) 0 7%, transparent 8%),
+    linear-gradient(180deg, #253c67 0%, #263256 44%, #7d5562 100%);
 }
 
 .sea-preview {
-  background: url("assets/backgrounds/sea-day.png?v=20260811-sea-bg") center / cover no-repeat;
+  background: url("assets/backgrounds/sea-day.png?v=20260820-radio-placement-map") center / cover no-repeat;
 }
 
 .forest-preview {
-  background: url("assets/backgrounds/forest-day.png?v=20260811-forest-bg") center / cover no-repeat;
+  background: url("assets/backgrounds/forest-day.png?v=20260820-radio-placement-map") center / cover no-repeat;
 }
 
 
@@ -836,10 +926,10 @@ progress {
   }
 
   .floor-radio {
-    left: 4px;
-    bottom: 166px;
-    width: 59px;
-    height: 53px;
+    right: 14px;
+    bottom: 160px;
+    width: 50px;
+    height: 57px;
   }
 
   .cat-button {

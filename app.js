@@ -1,4 +1,12 @@
-const assetVersion = "20260819-radio-sheet-12";
+const assetVersion = "20260820-radio-placement-map";
+
+const backgroundIds = [
+  "room-custom-01",
+  "room-custom-02",
+  "room-custom-03",
+  "sea",
+  "forest",
+];
 
 const rugs = {
   "floor-rug": {
@@ -36,16 +44,16 @@ const rugs = {
 };
 
 const radios = {
-  "radio-01": { name: "라디오 1", image: "assets/props/radios/radio_01.png" },
-  "radio-02": { name: "라디오 2", image: "assets/props/radios/radio_02.png" },
-  "radio-03": { name: "라디오 3", image: "assets/props/radios/radio_03.png" },
-  "radio-04": { name: "라디오 4", image: "assets/props/radios/radio_04.png" },
-  "radio-05": { name: "라디오 5", image: "assets/props/radios/radio_05.png" },
-  "radio-06": { name: "라디오 6", image: "assets/props/radios/radio_06.png" },
-  "radio-07": { name: "라디오 7", image: "assets/props/radios/radio_07.png" },
-  "radio-08": { name: "라디오 8", image: "assets/props/radios/radio_08.png" },
-  "radio-09": { name: "라디오 9", image: "assets/props/radios/radio_09.png" },
-  "radio-10": { name: "라디오 10", image: "assets/props/radios/radio_10.png" },
+  "radio-01": { name: "라디오 1", image: "assets/props/radios/radio_01.png", placedImage: "assets/props/radios/placed/radio_02.png" },
+  "radio-02": { name: "라디오 2", image: "assets/props/radios/radio_02.png", placedImage: "assets/props/radios/placed/radio_01.png" },
+  "radio-03": { name: "라디오 3", image: "assets/props/radios/radio_03.png", placedImage: "assets/props/radios/placed/radio_03.png" },
+  "radio-04": { name: "라디오 4", image: "assets/props/radios/radio_04.png", placedImage: "assets/props/radios/placed/radio_04.png" },
+  "radio-05": { name: "라디오 5", image: "assets/props/radios/radio_05.png", placedImage: "assets/props/radios/placed/radio_05.png" },
+  "radio-06": { name: "라디오 6", image: "assets/props/radios/radio_06.png", placedImage: "assets/props/radios/placed/radio_06.png" },
+  "radio-07": { name: "라디오 7", image: "assets/props/radios/radio_07.png", placedImage: "assets/props/radios/placed/radio_07.png" },
+  "radio-08": { name: "라디오 8", image: "assets/props/radios/radio_08.png", placedImage: "assets/props/radios/placed/radio_08.png" },
+  "radio-09": { name: "라디오 9", image: "assets/props/radios/radio_09.png", placedImage: "assets/props/radios/placed/radio_09.png" },
+  "radio-10": { name: "라디오 10", image: "assets/props/radios/radio_10.png", placedImage: "assets/props/radios/placed/radio_10.png" },
   "radio-11": { name: "라디오 11", image: "assets/props/radios/radio_11.png" },
   "radio-12": { name: "라디오 12", image: "assets/props/radios/radio_12.png" },
 };
@@ -99,12 +107,12 @@ const walkFrames = [
   `assets/cat-walk/walk-a.png?v=${assetVersion}`,
   `assets/cat-walk/walk-b.png?v=${assetVersion}`,
 ];
-
 const state = {
   selectedBowl: localStorage.getItem("selectedBowl") || "hand-hammered",
-  selectedBackground: localStorage.getItem("selectedBackground") || "day",
+  selectedBackground: localStorage.getItem("selectedBackground") || "room-custom-01",
   selectedRug: localStorage.getItem("selectedRug") || "floor-rug",
   selectedRadio: localStorage.getItem("selectedRadio") || "radio-01",
+  selectedDecorTab: localStorage.getItem("selectedDecorTab") || "rugs",
   showClock: localStorage.getItem("showClock") ?? localStorage.getItem("showRoomProps") ?? "true",
   showRug: localStorage.getItem("showRug") ?? localStorage.getItem("showRoomProps") ?? "true",
   showRadio: localStorage.getItem("showRadio") ?? "true",
@@ -137,9 +145,14 @@ if (!radios[state.selectedRadio]) {
   localStorage.setItem("selectedRadio", state.selectedRadio);
 }
 
-if (state.selectedBackground === "room-window") {
-  state.selectedBackground = "day";
+if (state.selectedBackground === "room-window" || !backgroundIds.includes(state.selectedBackground)) {
+  state.selectedBackground = "room-custom-01";
   localStorage.setItem("selectedBackground", state.selectedBackground);
+}
+
+if (!["rugs", "clock", "radios", "backgrounds"].includes(state.selectedDecorTab)) {
+  state.selectedDecorTab = "rugs";
+  localStorage.setItem("selectedDecorTab", state.selectedDecorTab);
 }
 
 const screens = document.querySelectorAll(".screen");
@@ -159,6 +172,8 @@ const radioToggle = document.querySelector("#radioToggle");
 const floorRug = document.querySelector("#floorRug");
 const radioProp = document.querySelector("#radioProp");
 const selectedBowlOverlay = document.querySelector("#selectedBowlOverlay");
+const decorTabs = document.querySelectorAll("[data-decor-tab]");
+const decorSections = document.querySelectorAll("[data-decor-section]");
 const bowlAudio = new Audio(`${bowls[state.selectedBowl].sound}?v=${assetVersion}`);
 bowlAudio.preload = "auto";
 const walkTimers = [];
@@ -183,6 +198,11 @@ Object.values(rugs).forEach((rug) => {
 Object.values(radios).forEach((radio) => {
   const image = new Image();
   image.src = `${radio.image}?v=${assetVersion}`;
+
+  if (radio.placedImage) {
+    const placedImage = new Image();
+    placedImage.src = `${radio.placedImage}?v=${assetVersion}`;
+  }
 });
 
 Object.values(bowls).forEach((bowl) => {
@@ -560,10 +580,9 @@ function renderRecords() {
 }
 
 function renderBackground() {
-  homeScene.classList.toggle("scene-day", state.selectedBackground === "day");
-  homeScene.classList.toggle("scene-night", state.selectedBackground === "night");
-  homeScene.classList.toggle("scene-sea", state.selectedBackground === "sea");
-  homeScene.classList.toggle("scene-forest", state.selectedBackground === "forest");
+  backgroundIds.forEach((backgroundId) => {
+    homeScene.classList.toggle(`scene-${backgroundId}`, state.selectedBackground === backgroundId);
+  });
 
   document.querySelectorAll(".background-card").forEach((card) => {
     const selected = card.dataset.background === state.selectedBackground;
@@ -617,7 +636,8 @@ function renderRoomProps() {
   }
 
   if (radioProp) {
-    radioProp.src = `${radios[state.selectedRadio].image}?v=${assetVersion}`;
+    const selectedRadio = radios[state.selectedRadio];
+    radioProp.src = `${selectedRadio.placedImage || selectedRadio.image}?v=${assetVersion}`;
   }
 
   document.querySelectorAll(".clock-prop").forEach((prop) => {
@@ -651,9 +671,27 @@ function renderRoomProps() {
   });
 
   document.querySelectorAll(".radio-card").forEach((card) => {
+    const radio = radios[card.dataset.radio];
     const selected = card.dataset.radio === state.selectedRadio;
     card.classList.toggle("selected", selected);
     card.setAttribute("aria-pressed", String(selected));
+
+    const image = card.querySelector("img");
+    if (image && radio) {
+      image.src = `${radio.placedImage || radio.image}?v=${assetVersion}`;
+    }
+  });
+}
+
+function renderDecorTabs() {
+  decorTabs.forEach((tab) => {
+    const selected = tab.dataset.decorTab === state.selectedDecorTab;
+    tab.classList.toggle("active", selected);
+    tab.setAttribute("aria-selected", String(selected));
+  });
+
+  decorSections.forEach((section) => {
+    section.classList.toggle("hidden", section.dataset.decorSection !== state.selectedDecorTab);
   });
 }
 
@@ -662,10 +700,19 @@ function render() {
   renderBackground();
   renderBowlSelection();
   renderRoomProps();
+  renderDecorTabs();
 }
 
 document.querySelectorAll("[data-view]").forEach((button) => {
   button.addEventListener("click", () => showScreen(button.dataset.view));
+});
+
+decorTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    state.selectedDecorTab = tab.dataset.decorTab;
+    localStorage.setItem("selectedDecorTab", state.selectedDecorTab);
+    renderDecorTabs();
+  });
 });
 
 document.querySelectorAll("[data-background]").forEach((button) => {
