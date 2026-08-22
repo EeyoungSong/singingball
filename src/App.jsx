@@ -588,11 +588,11 @@ function QuickPanel({ setScreen }) {
   return (
     <nav className="quick-panel" aria-label="빠른 메뉴">
       <button className="quick-card" type="button" onClick={() => setScreen("bowls")}>
-        <span className="quick-icon">🥣</span>
+        <img className="quick-icon quick-icon-image quick-icon-bowl" src={versioned("assets/ui/gnb-singing-bowl.png")} alt="" aria-hidden="true" />
         <span>싱잉볼</span>
       </button>
       <button className="quick-card" type="button" onClick={() => setScreen("cats")}>
-        <span className="quick-icon">🏪</span>
+        <img className="quick-icon quick-icon-image quick-icon-shop" src={versioned("assets/ui/gnb-shop.png")} alt="" aria-hidden="true" />
         <span>꾸미기</span>
       </button>
       <button className="quick-card" type="button" onClick={() => setScreen("records")}>
@@ -835,10 +835,12 @@ function RecordsScreen({ screen, setScreen, todayCount, totalCount, records, wee
           ⌂<span>홈</span>
         </button>
         <button type="button" onClick={() => setScreen("bowls")}>
-          🥣<span>싱잉볼</span>
+          <img className="tab-icon-image tab-icon-bowl" src={versioned("assets/ui/gnb-singing-bowl.png")} alt="" aria-hidden="true" />
+          <span>싱잉볼</span>
         </button>
         <button type="button" onClick={() => setScreen("cats")}>
-          🏪<span>꾸미기</span>
+          <img className="tab-icon-image tab-icon-shop" src={versioned("assets/ui/gnb-shop.png")} alt="" aria-hidden="true" />
+          <span>꾸미기</span>
         </button>
         <button className="active" type="button">
           ⌗<span>기록</span>

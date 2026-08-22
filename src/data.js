@@ -18,6 +18,7 @@ const assetUrls = import.meta.glob(
     "../assets/props/radios/placed/*",
     "../assets/props/wall-clock.png",
     "../assets/sounds/*",
+    "../assets/ui/*",
   ],
   {
     eager: true,

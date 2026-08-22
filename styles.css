@@ -91,7 +91,7 @@ button {
   position: relative;
   flex: 1;
   overflow: hidden;
-  background: var(--window-view-image, #fff8eb) 68% center / cover no-repeat;
+  background: var(--window-view-image, #fff8eb) 68% calc(50% - 50px) / cover no-repeat;
 }
 
 .scene-room-custom-01 {
@@ -131,7 +131,7 @@ button {
   z-index: 1;
   content: "";
   pointer-events: none;
-  background: url("assets/backgrounds/room-window-overlay.png?v=20260820-clock-3col-no-check") 68% center / cover no-repeat;
+  background: url("assets/backgrounds/room-window-overlay.png?v=20260820-clock-3col-no-check") 68% calc(50% - 50px) / cover no-repeat;
 }
 
 .scene::before {
@@ -160,7 +160,7 @@ button {
 
 .wall-clock {
   position: absolute;
-  top: 184px;
+  top: 134px;
   right: 26px;
   z-index: 2;
   width: 76px;
@@ -172,7 +172,7 @@ button {
 .floor-rug {
   position: absolute;
   left: 50%;
-  bottom: 86px;
+  bottom: 136px;
   z-index: 2;
   width: 240px;
   height: auto;
@@ -184,7 +184,7 @@ button {
 .floor-radio {
   position: absolute;
   right: 20px;
-  bottom: 194px;
+  bottom: 244px;
   z-index: 2;
   width: 58px;
   height: 66px;
@@ -209,7 +209,7 @@ button {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 98px;
+  bottom: 148px;
   z-index: 3;
   display: grid;
   place-items: center;
@@ -315,30 +315,55 @@ button {
 
 .quick-panel {
   position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 32px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 6;
+  padding: 10px 18px calc(12px + env(safe-area-inset-bottom));
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 10px;
+  border-top: 1px solid rgba(217, 201, 181, 0.72);
+  background: rgba(255, 250, 243, 0.92);
+  box-shadow: 0 -16px 32px rgba(74, 54, 34, 0.12);
+  backdrop-filter: blur(16px);
 }
 
 .quick-card {
-  min-height: 82px;
+  min-height: 68px;
   border: 0;
-  border-radius: 16px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
   gap: 4px;
   background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 16px 34px rgba(86, 61, 38, 0.14);
+  box-shadow: 0 10px 24px rgba(86, 61, 38, 0.12);
   font-size: 13px;
   font-weight: 800;
 }
 
 .quick-icon {
   font-size: 24px;
+}
+
+.quick-icon-image {
+  width: 34px;
+  height: 30px;
+  object-fit: contain;
+  transform: translateY(3px);
+  filter: drop-shadow(0 3px 5px rgba(70, 46, 27, 0.12));
+}
+
+.quick-icon-bowl {
+  width: 40px;
+  height: 34px;
+  transform: translateY(6px);
+}
+
+.quick-icon-shop {
+  width: 42px;
+  height: 34px;
+  transform: translateY(7px);
 }
 
 .top-bar {
@@ -896,6 +921,25 @@ progress {
   font-size: 11px;
 }
 
+.tab-icon-image {
+  width: 24px;
+  height: 22px;
+  object-fit: contain;
+  transform: translateY(2px);
+}
+
+.tab-icon-bowl {
+  width: 28px;
+  height: 25px;
+  transform: translateY(4px);
+}
+
+.tab-icon-shop {
+  width: 31px;
+  height: 26px;
+  transform: translateY(5px);
+}
+
 .tab-bar .active {
   color: var(--selection-color-strong);
 }
@@ -935,14 +979,30 @@ progress {
   }
 
   .cat-stage {
-    bottom: 80px;
+    bottom: 130px;
   }
 
   .floor-radio {
     right: 14px;
-    bottom: 160px;
+    bottom: 210px;
     width: 50px;
     height: 57px;
+  }
+
+  .floor-rug {
+    bottom: 128px;
+  }
+
+  .wall-clock {
+    top: 112px;
+  }
+
+  .quick-panel {
+    padding: 8px 16px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .quick-card {
+    min-height: 62px;
   }
 
   .cat-button {
