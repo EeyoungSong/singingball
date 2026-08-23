@@ -570,7 +570,7 @@ export default function App() {
   return (
     <main className="app-shell" aria-label="Singing Bowl Cat prototype">
       <section className="phone">
-        <div className={`screen ${screen !== "home" ? "hidden" : ""}`} data-screen="home">
+        <div className={`screen ${screen !== "home" && screen !== "settings" ? "hidden" : ""}`} data-screen="home">
           <div className={sceneClass} id="homeScene" ref={homeSceneRef} onClick={walkCatTo}>
             <button
               className={`icon-button ambience-button ${state.ambienceEnabled === "true" ? "active" : ""}`}
@@ -934,17 +934,20 @@ function SettingsScreen({ screen, setScreen, state, updateState }) {
   const bowlPercent = Math.round(Number(state.bowlVolume) * 100);
 
   return (
-    <div className={`screen ${screen !== "settings" ? "hidden" : ""}`} data-screen="settings">
-      <header className="top-bar">
-        <button className="back-button" type="button" onClick={() => setScreen("home")} aria-label="뒤로">
-          ‹
-        </button>
-        <h1>설정</h1>
-        <button className="done-button" type="button" onClick={() => setScreen("home")}>
-          완료
-        </button>
-      </header>
-      <div className="content settings-content">
+    <div
+      className={`settings-modal ${screen !== "settings" ? "hidden" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsTitle"
+      onClick={() => setScreen("home")}
+    >
+      <div className="settings-dialog" onClick={(event) => event.stopPropagation()}>
+        <header className="settings-header">
+          <h1 id="settingsTitle">설정</h1>
+          <button className="done-button" type="button" onClick={() => setScreen("home")}>
+            완료
+          </button>
+        </header>
         <section className="settings-panel" aria-label="소리 설정">
           <VolumeControl
             label="배경 소리"
