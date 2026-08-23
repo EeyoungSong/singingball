@@ -25,6 +25,8 @@ const persistedKeys = new Set([
   "showRug",
   "showRadio",
   "ambienceEnabled",
+  "ambienceVolume",
+  "bowlVolume",
 ]);
 
 function readStored(key, fallback) {
@@ -47,6 +49,11 @@ function formatTime(value) {
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
+}
+
+function normalizeVolume(value, fallback) {
+  const volume = Number(value);
+  return String(Number.isFinite(volume) ? clamp(volume, 0, 1) : fallback);
 }
 
 function getRecordId() {
@@ -89,6 +96,8 @@ function getInitialState() {
     showRug: readStored("showRug", localStorage.getItem("showRoomProps") ?? "true"),
     showRadio: readStored("showRadio", "true"),
     ambienceEnabled: readStored("ambienceEnabled", "false"),
+    ambienceVolume: normalizeVolume(readStored("ambienceVolume", "0.42"), 0.42),
+    bowlVolume: normalizeVolume(readStored("bowlVolume", "1"), 1),
     records: JSON.parse(localStorage.getItem("ringRecords") || "[]"),
   };
 }
@@ -131,18 +140,25 @@ export default function App() {
 
   useEffect(() => {
     audioRef.current = new Audio(versioned(selectedBowl.sound));
+    audioRef.current.volume = Number(state.bowlVolume);
     audioRef.current.preload = "auto";
   }, []);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = Number(state.bowlVolume);
+    }
+  }, [state.bowlVolume]);
 
   useEffect(() => {
     if (!ambienceAudioRef.current) {
       ambienceAudioRef.current = new Audio();
       ambienceAudioRef.current.loop = true;
-      ambienceAudioRef.current.volume = 0.42;
       ambienceAudioRef.current.preload = "auto";
     }
 
     const audio = ambienceAudioRef.current;
+    audio.volume = Number(state.ambienceVolume);
 
     if (state.ambienceEnabled !== "true" || !selectedAmbience) {
       audio.pause();
@@ -158,7 +174,7 @@ export default function App() {
     }
 
     audio.play().catch(() => {});
-  }, [state.ambienceEnabled, state.selectedBackground, selectedAmbience]);
+  }, [state.ambienceEnabled, state.selectedBackground, state.ambienceVolume, selectedAmbience]);
 
   useEffect(
     () => () => {
@@ -245,6 +261,7 @@ export default function App() {
 
     audio.pause();
     audio.src = versioned(selectedBowl.sound);
+    audio.volume = Number(state.bowlVolume);
     audio.currentTime = 0;
     audio.play().catch(() => {});
   };
@@ -564,7 +581,7 @@ export default function App() {
             >
               {state.ambienceEnabled === "true" ? "♪" : "♩"}
             </button>
-            <button className="icon-button settings-button" type="button" onClick={() => setScreen("cats")} aria-label="꾸미기">
+            <button className="icon-button settings-button" type="button" onClick={() => setScreen("settings")} aria-label="설정">
               ⚙
             </button>
             {state.showClock === "true" && selectedClock && (
@@ -640,6 +657,7 @@ export default function App() {
           weekCountsMax={weekCountsMax}
           records={visibleRecords}
         />
+        <SettingsScreen screen={screen} setScreen={setScreen} state={state} updateState={updateState} />
       </section>
     </main>
   );
@@ -908,5 +926,52 @@ function RecordsScreen({ screen, setScreen, todayCount, totalCount, records, wee
         </button>
       </nav>
     </div>
+  );
+}
+
+function SettingsScreen({ screen, setScreen, state, updateState }) {
+  const ambiencePercent = Math.round(Number(state.ambienceVolume) * 100);
+  const bowlPercent = Math.round(Number(state.bowlVolume) * 100);
+
+  return (
+    <div className={`screen ${screen !== "settings" ? "hidden" : ""}`} data-screen="settings">
+      <header className="top-bar">
+        <button className="back-button" type="button" onClick={() => setScreen("home")} aria-label="뒤로">
+          ‹
+        </button>
+        <h1>설정</h1>
+        <button className="done-button" type="button" onClick={() => setScreen("home")}>
+          완료
+        </button>
+      </header>
+      <div className="content settings-content">
+        <section className="settings-panel" aria-label="소리 설정">
+          <VolumeControl
+            label="배경 소리"
+            value={state.ambienceVolume}
+            percent={ambiencePercent}
+            onChange={(value) => updateState({ ambienceVolume: value })}
+          />
+          <VolumeControl
+            label="싱잉볼 소리"
+            value={state.bowlVolume}
+            percent={bowlPercent}
+            onChange={(value) => updateState({ bowlVolume: value })}
+          />
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function VolumeControl({ label, value, percent, onChange }) {
+  return (
+    <label className="volume-control">
+      <span>
+        <strong>{label}</strong>
+        <em>{percent}%</em>
+      </span>
+      <input type="range" min="0" max="1" step="0.01" value={value} onChange={(event) => onChange(event.target.value)} />
+    </label>
   );
 }

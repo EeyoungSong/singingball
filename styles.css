@@ -916,6 +916,50 @@ progress {
   background: linear-gradient(180deg, var(--selection-color-light), var(--selection-color-strong));
 }
 
+.settings-content {
+  padding-top: 14px;
+}
+
+.settings-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.volume-control {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #eee1d0;
+  border-radius: 18px;
+  background: rgba(255, 250, 243, 0.94);
+  box-shadow: 0 12px 24px rgba(92, 66, 40, 0.08);
+}
+
+.volume-control span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.volume-control strong {
+  font-size: 16px;
+  color: #2f241c;
+}
+
+.volume-control em {
+  min-width: 44px;
+  color: #8a6a47;
+  font-style: normal;
+  font-weight: 800;
+  text-align: right;
+}
+
+.volume-control input {
+  width: 100%;
+  accent-color: #d59643;
+}
+
 .tab-bar {
   position: absolute;
   left: 0;
