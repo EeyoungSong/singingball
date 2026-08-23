@@ -921,7 +921,7 @@ progress {
   inset: 0;
   z-index: 10;
   display: grid;
-  align-items: end;
+  place-items: center;
   padding: 18px;
   background: rgba(55, 42, 30, 0.26);
   backdrop-filter: blur(4px);
@@ -932,6 +932,7 @@ progress {
 }
 
 .settings-dialog {
+  width: min(100%, 320px);
   display: grid;
   gap: 18px;
   padding: 18px;
