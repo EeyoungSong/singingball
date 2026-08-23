@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   backgroundIds,
   backgrounds,
+  backgroundSounds,
   bowls,
   clocks,
   decorTabs,
@@ -23,6 +24,7 @@ const persistedKeys = new Set([
   "showClock",
   "showRug",
   "showRadio",
+  "ambienceEnabled",
 ]);
 
 function readStored(key, fallback) {
@@ -53,13 +55,22 @@ function getRecordId() {
     : `record-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function normalizeBackgroundId(value) {
+  const aliases = {
+    "room-custom-01": "lake",
+    "room-custom-02": "mountain",
+    "room-custom-03": "city-view",
+  };
+
+  const backgroundId = aliases[value] || value;
+  return backgroundIds.includes(backgroundId) ? backgroundId : "lake";
+}
+
 function getInitialState() {
   const selectedBowl = bowls[readStored("selectedBowl", "hand-hammered")]?.unlocked
     ? readStored("selectedBowl", "hand-hammered")
     : "hand-hammered";
-  const selectedBackground = backgroundIds.includes(readStored("selectedBackground", "room-custom-01"))
-    ? readStored("selectedBackground", "room-custom-01")
-    : "room-custom-01";
+  const selectedBackground = normalizeBackgroundId(readStored("selectedBackground", "lake"));
   const selectedRug = readStored("selectedRug", "floor-rug-02");
   const selectedClock = readStored("selectedClock", "wall-clock");
   const selectedRadio = readStored("selectedRadio", "radio-01");
@@ -77,6 +88,7 @@ function getInitialState() {
     showClock: readStored("showClock", localStorage.getItem("showRoomProps") ?? "true"),
     showRug: readStored("showRug", localStorage.getItem("showRoomProps") ?? "true"),
     showRadio: readStored("showRadio", "true"),
+    ambienceEnabled: readStored("ambienceEnabled", "false"),
     records: JSON.parse(localStorage.getItem("ringRecords") || "[]"),
   };
 }
@@ -96,6 +108,7 @@ export default function App() {
   const [suppressNextHit, setSuppressNextHit] = useState(false);
 
   const audioRef = useRef(null);
+  const ambienceAudioRef = useRef(null);
   const catImageRef = useRef(null);
   const bowlImageRef = useRef(null);
   const catStageRef = useRef(null);
@@ -110,6 +123,7 @@ export default function App() {
   const selectedClock = clocks[state.selectedClock];
   const selectedRug = rugs[state.selectedRug];
   const selectedRadio = radios[state.selectedRadio];
+  const selectedAmbience = backgroundSounds[state.selectedBackground];
 
   useEffect(() => {
     latestRef.current = { state, catOffset, animating, walking, suppressNextHit };
@@ -119,6 +133,39 @@ export default function App() {
     audioRef.current = new Audio(versioned(selectedBowl.sound));
     audioRef.current.preload = "auto";
   }, []);
+
+  useEffect(() => {
+    if (!ambienceAudioRef.current) {
+      ambienceAudioRef.current = new Audio();
+      ambienceAudioRef.current.loop = true;
+      ambienceAudioRef.current.volume = 0.42;
+      ambienceAudioRef.current.preload = "auto";
+    }
+
+    const audio = ambienceAudioRef.current;
+
+    if (state.ambienceEnabled !== "true" || !selectedAmbience) {
+      audio.pause();
+      return;
+    }
+
+    const soundUrl = versioned(selectedAmbience.sound);
+    if (audio.dataset.soundUrl !== soundUrl) {
+      audio.pause();
+      audio.src = soundUrl;
+      audio.dataset.soundUrl = soundUrl;
+      audio.currentTime = 0;
+    }
+
+    audio.play().catch(() => {});
+  }, [state.ambienceEnabled, state.selectedBackground, selectedAmbience]);
+
+  useEffect(
+    () => () => {
+      ambienceAudioRef.current?.pause();
+    },
+    [],
+  );
 
   useEffect(() => {
     [standFrame, ...walkFrames, ...hitFrames].forEach((path) => {
@@ -493,6 +540,11 @@ export default function App() {
     });
   };
 
+  const toggleAmbience = (event) => {
+    event.stopPropagation();
+    updateState({ ambienceEnabled: state.ambienceEnabled === "true" ? "false" : "true" });
+  };
+
   const todayCount = recordsForDate(todayKey()).length;
   const weekCountsMax = Math.max(...weekCounts, 1);
   const visibleRecords = state.records.slice(0, 5);
@@ -503,6 +555,15 @@ export default function App() {
       <section className="phone">
         <div className={`screen ${screen !== "home" ? "hidden" : ""}`} data-screen="home">
           <div className={sceneClass} id="homeScene" ref={homeSceneRef} onClick={walkCatTo}>
+            <button
+              className={`icon-button ambience-button ${state.ambienceEnabled === "true" ? "active" : ""}`}
+              type="button"
+              onClick={toggleAmbience}
+              aria-label={`${selectedAmbience?.name || "배경"} 소리 ${state.ambienceEnabled === "true" ? "끄기" : "켜기"}`}
+              title={`${selectedAmbience?.name || "배경"} 소리`}
+            >
+              {state.ambienceEnabled === "true" ? "♪" : "♩"}
+            </button>
             <button className="icon-button settings-button" type="button" onClick={() => setScreen("cats")} aria-label="꾸미기">
               ⚙
             </button>

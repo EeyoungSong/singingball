@@ -27,15 +27,23 @@ const assetUrls = import.meta.glob(
   },
 );
 
-export const backgroundIds = ["room-custom-01", "room-custom-02", "room-custom-03", "sea", "forest"];
+export const backgroundIds = ["lake", "mountain", "city-view", "sea", "forest"];
 
 export const backgrounds = [
-  { id: "room-custom-01", name: "방 1", previewClass: "room-custom-01-preview" },
-  { id: "room-custom-02", name: "방 2", previewClass: "room-custom-02-preview" },
-  { id: "room-custom-03", name: "방 3", previewClass: "room-custom-03-preview" },
-  { id: "sea", name: "바닷가", previewClass: "sea-preview" },
-  { id: "forest", name: "숲길", previewClass: "forest-preview" },
+  { id: "lake", name: "호수", previewClass: "lake-preview" },
+  { id: "mountain", name: "산", previewClass: "mountain-preview" },
+  { id: "city-view", name: "시티뷰", previewClass: "city-view-preview" },
+  { id: "sea", name: "바다", previewClass: "sea-preview" },
+  { id: "forest", name: "숲", previewClass: "forest-preview" },
 ];
+
+export const backgroundSounds = {
+  lake: { name: "호수", sound: "assets/sounds/ambience-lake.mp3" },
+  mountain: { name: "산", sound: "assets/sounds/ambience-forest.mp3" },
+  "city-view": { name: "시티뷰", sound: "assets/sounds/ambience-city.mp3" },
+  sea: { name: "바다", sound: "assets/sounds/ambience-sea.mp3" },
+  forest: { name: "숲", sound: "assets/sounds/ambience-forest.mp3" },
+};
 
 export const rugs = {
   "floor-rug-02": { name: "러그 2", image: "assets/props/floor-rug-02.png" },

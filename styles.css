@@ -94,16 +94,16 @@ button {
   background: var(--window-view-image, #fff8eb) 68% calc(50% - 50px) / cover no-repeat;
 }
 
-.scene-room-custom-01 {
-  --window-view-image: url("assets/backgrounds/room-custom-01.png?v=20260820-clock-3col-no-check");
+.scene-lake {
+  --window-view-image: url("assets/backgrounds/lake.png?v=20260820-clock-3col-no-check");
 }
 
-.scene-room-custom-02 {
-  --window-view-image: url("assets/backgrounds/room-custom-02.png?v=20260820-clock-3col-no-check");
+.scene-mountain {
+  --window-view-image: url("assets/backgrounds/mountain.png?v=20260820-clock-3col-no-check");
 }
 
-.scene-room-custom-03 {
-  --window-view-image: url("assets/backgrounds/room-custom-03.png?v=20260820-clock-3col-no-check");
+.scene-city-view {
+  --window-view-image: url("assets/backgrounds/city-view.png?v=20260820-clock-3col-no-check");
 }
 
 .scene-day {
@@ -156,6 +156,27 @@ button {
   top: 56px;
   right: 22px;
   z-index: 5;
+}
+
+.ambience-button {
+  position: absolute;
+  top: 56px;
+  left: 22px;
+  z-index: 5;
+  width: 34px;
+  height: 34px;
+  color: rgba(43, 31, 22, 0.72);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.54);
+  box-shadow: 0 8px 20px rgba(92, 66, 40, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.ambience-button.active {
+  color: #6b481e;
+  background: rgba(255, 244, 213, 0.68);
 }
 
 .wall-clock {
@@ -780,16 +801,16 @@ progress {
   border-radius: 14px;
 }
 
-.room-custom-01-preview {
-  background: url("assets/backgrounds/room-custom-01.png?v=20260820-clock-3col-no-check") center / cover no-repeat;
+.lake-preview {
+  background: url("assets/backgrounds/lake.png?v=20260820-clock-3col-no-check") center / cover no-repeat;
 }
 
-.room-custom-02-preview {
-  background: url("assets/backgrounds/room-custom-02.png?v=20260820-clock-3col-no-check") center / cover no-repeat;
+.mountain-preview {
+  background: url("assets/backgrounds/mountain.png?v=20260820-clock-3col-no-check") center / cover no-repeat;
 }
 
-.room-custom-03-preview {
-  background: url("assets/backgrounds/room-custom-03.png?v=20260820-clock-3col-no-check") center / cover no-repeat;
+.city-view-preview {
+  background: url("assets/backgrounds/city-view.png?v=20260820-clock-3col-no-check") center / cover no-repeat;
 }
 
 .day-preview {
