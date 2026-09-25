@@ -2,3 +2,6 @@ node_modules/
 dist/
 tmp/
 .DS_Store
+
+# Downloadable copy of the tracked calico asset folder
+/cat-calico-assets.zip

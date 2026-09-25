@@ -279,6 +279,12 @@ button {
   filter: drop-shadow(0 8px 10px rgba(74, 48, 26, 0.18));
 }
 
+/* Match the calico canvas to the original cat and bowl anchors. */
+.cat-button.cat-calico:not(.walking) #catFrame {
+  transform-origin: top left;
+  transform: translate(12.2%, 7.2%) scale(0.77);
+}
+
 .cat-button.walking #catFrame {
   width: 167px;
   height: 297px;
@@ -501,7 +507,7 @@ small {
   margin: -6px 0 -1px;
   padding: 0 10px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 7px;
   align-items: end;
 }
@@ -541,6 +547,32 @@ small {
   display: grid;
   justify-items: center;
   gap: 5px;
+}
+
+.cat-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 22px 12px;
+}
+
+.cat-picker-grid .pet-card {
+  border: 2px solid #e5d5bd;
+  border-radius: 18px;
+  background: #fffaf3;
+  color: #443b35;
+  cursor: pointer;
+}
+
+.cat-picker-grid .pet-card.selected {
+  border-color: var(--selection-color);
+  background: #fbfdff;
+}
+
+.cat-picker-grid .pet-card img {
+  width: 132px;
+  max-width: 100%;
+  height: 132px;
 }
 
 .pet-card img {

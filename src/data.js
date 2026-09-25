@@ -8,6 +8,8 @@ const assetUrls = import.meta.glob(
     "../assets/cat-walk/stand.png",
     "../assets/cat-walk/walk-a.png",
     "../assets/cat-walk/walk-b.png",
+    "../assets/cat-calico/hit/*.png",
+    "../assets/cat-calico/walk/*.png",
     "../assets/props/clocks/*",
     "../assets/props/floor-rug-02.png",
     "../assets/props/floor-rug-03.png",
@@ -123,6 +125,7 @@ export const bowls = {
 };
 
 export const decorTabs = [
+  { id: "cats", label: "고양이" },
   { id: "rugs", label: "러그" },
   { id: "clock", label: "시계" },
   { id: "radios", label: "라디오" },
@@ -136,6 +139,17 @@ export const hitFrames = Array.from({ length: 9 }, (_, index) => {
 
 export const standFrame = "assets/cat-walk/stand.png";
 export const walkFrames = ["assets/cat-walk/walk-a.png", "assets/cat-walk/walk-b.png"];
+
+export const cats = {
+  white: { name: "흰 고양이", hitFrames, standFrame, walkFrames },
+  calico: {
+    name: "삼색 고양이",
+    hitFrames: Array.from({ length: 9 }, (_, index) =>
+      `assets/cat-calico/hit/hit_${String(index + 1).padStart(2, "0")}.png`),
+    standFrame: "assets/cat-calico/walk/stand.png",
+    walkFrames: ["assets/cat-calico/walk/walk-a.png", "assets/cat-calico/walk/walk-b.png"],
+  },
+};
 
 export function versioned(path) {
   return assetUrls[`../${path}`] || `${path}?v=${assetVersion}`;

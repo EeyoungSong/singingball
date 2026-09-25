@@ -6,15 +6,14 @@ import {
   bowls,
   clocks,
   decorTabs,
-  hitFrames,
+  cats,
   radios,
   rugs,
-  standFrame,
   versioned,
-  walkFrames,
 } from "./data.js";
 
 const persistedKeys = new Set([
+  "selectedCat",
   "selectedBowl",
   "selectedBackground",
   "selectedRug",
@@ -74,6 +73,8 @@ function normalizeBackgroundId(value) {
 }
 
 function getInitialState() {
+  const storedCat = readStored("selectedCat", "white");
+  const selectedCat = Object.hasOwn(cats, storedCat) ? storedCat : "white";
   const selectedBowl = bowls[readStored("selectedBowl", "hand-hammered")]?.unlocked
     ? readStored("selectedBowl", "hand-hammered")
     : "hand-hammered";
@@ -81,11 +82,12 @@ function getInitialState() {
   const selectedRug = readStored("selectedRug", "floor-rug-02");
   const selectedClock = readStored("selectedClock", "wall-clock");
   const selectedRadio = readStored("selectedRadio", "radio-01");
-  const selectedDecorTab = ["rugs", "clock", "radios", "backgrounds"].includes(readStored("selectedDecorTab", "rugs"))
-    ? readStored("selectedDecorTab", "rugs")
-    : "rugs";
+  const selectedDecorTab = decorTabs.some((tab) => tab.id === readStored("selectedDecorTab", "cats"))
+    ? readStored("selectedDecorTab", "cats")
+    : "cats";
 
   return {
+    selectedCat,
     selectedBowl,
     selectedBackground,
     selectedRug: selectedRug && rugs[selectedRug] ? selectedRug : "floor-rug-02",
@@ -105,6 +107,8 @@ function getInitialState() {
 export default function App() {
   const [screen, setScreen] = useState("home");
   const [state, setState] = useState(getInitialState);
+  const selectedCat = cats[state.selectedCat];
+  const { hitFrames, standFrame, walkFrames } = selectedCat;
   const [catFrame, setCatFrame] = useState(versioned(hitFrames[0]));
   const [catOffset, setCatOffset] = useState({ x: 0, y: 0 });
   const [catDirection, setCatDirection] = useState(1);
@@ -126,6 +130,7 @@ export default function App() {
   const hitTestCanvasRef = useRef(null);
   const dragStartRef = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const timersRef = useRef([]);
+  const hitRequestRef = useRef(null);
   const latestRef = useRef({ state, catOffset, animating, walking, suppressNextHit });
 
   const selectedBowl = bowls[state.selectedBowl] || bowls["hand-hammered"];
@@ -184,7 +189,7 @@ export default function App() {
   );
 
   useEffect(() => {
-    [standFrame, ...walkFrames, ...hitFrames].forEach((path) => {
+    Object.values(cats).flatMap((cat) => [cat.standFrame, ...cat.walkFrames, ...cat.hitFrames]).forEach((path) => {
       const image = new Image();
       image.src = versioned(path);
     });
@@ -224,6 +229,8 @@ export default function App() {
   }, [state.records]);
 
   const clearTimers = () => {
+    window.cancelAnimationFrame(hitRequestRef.current);
+    hitRequestRef.current = null;
     while (timersRef.current.length > 0) {
       window.clearTimeout(timersRef.current.pop());
     }
@@ -274,7 +281,8 @@ export default function App() {
     clearTimers();
     setRinging(false);
 
-    window.requestAnimationFrame(() => {
+    hitRequestRef.current = window.requestAnimationFrame(() => {
+      hitRequestRef.current = null;
       setRinging(true);
       playBowlSound();
       addRecord();
@@ -519,7 +527,7 @@ export default function App() {
       return;
     }
 
-    if (!isCatBodyHit(event)) {
+    if (event.detail !== 0 && !isCatBodyHit(event)) {
       walkCatTo(event, { allowControlTarget: true });
       return;
     }
@@ -531,6 +539,19 @@ export default function App() {
   const selectBowl = (bowlId) => {
     if (!bowls[bowlId]?.unlocked) return;
     updateState({ selectedBowl: bowlId });
+  };
+
+  const selectCat = (catId) => {
+    if (!Object.hasOwn(cats, catId) || catId === state.selectedCat) return;
+    clearTimers();
+    setAnimating(false);
+    setWalking(false);
+    setRinging(false);
+    setDraggingCat(false);
+    setCatDragged(false);
+    setSuppressNextHit(false);
+    setCatFrame(versioned(cats[catId].hitFrames[0]));
+    updateState({ selectedCat: catId });
   };
 
   const selectRug = (rugId) => {
@@ -609,7 +630,7 @@ export default function App() {
               }}
             >
               <button
-                className={`cat-button ${walking ? "walking" : ""} ${ringing ? "ringing" : ""}`}
+                className={`cat-button cat-${state.selectedCat} ${walking ? "walking" : ""} ${ringing ? "ringing" : ""}`}
                 id="ringButton"
                 ref={ringButtonRef}
                 type="button"
@@ -621,7 +642,7 @@ export default function App() {
                 onPointerCancel={finishCatDrag}
                 onClick={handleCatClick}
               >
-                <img id="catFrame" ref={catImageRef} src={catFrame} alt="고양이가 싱잉볼을 치는 모습" />
+                <img id="catFrame" ref={catImageRef} src={catFrame} alt={`${selectedCat.name}${walking ? "가 걷는 모습" : "가 싱잉볼을 치는 모습"}`} />
                 <img
                   id="selectedBowlOverlay"
                   ref={bowlImageRef}
@@ -643,6 +664,7 @@ export default function App() {
           setScreen={setScreen}
           state={state}
           updateState={updateState}
+          selectCat={selectCat}
           selectRug={selectRug}
           selectClock={selectClock}
           selectRadio={selectRadio}
@@ -682,7 +704,7 @@ function QuickPanel({ setScreen }) {
   );
 }
 
-function DecorScreen({ screen, setScreen, state, updateState, selectRug, selectClock, selectRadio }) {
+function DecorScreen({ screen, setScreen, state, updateState, selectCat, selectRug, selectClock, selectRadio }) {
   return (
     <div className={`screen ${screen !== "cats" ? "hidden" : ""}`} data-screen="cats">
       <header className="top-bar">
@@ -708,11 +730,33 @@ function DecorScreen({ screen, setScreen, state, updateState, selectRug, selectC
             </button>
           ))}
         </nav>
+        <CatGrid active={state.selectedDecorTab === "cats"} selectedCat={state.selectedCat} selectCat={selectCat} />
         <ClockGrid active={state.selectedDecorTab === "clock"} selectedClock={state.selectedClock} showClock={state.showClock} selectClock={selectClock} />
         <RadioGrid active={state.selectedDecorTab === "radios"} selectedRadio={state.selectedRadio} showRadio={state.showRadio} selectRadio={selectRadio} />
         <RugGrid active={state.selectedDecorTab === "rugs"} selectedRug={state.selectedRug} showRug={state.showRug} selectRug={selectRug} />
         <BackgroundGrid active={state.selectedDecorTab === "backgrounds"} selectedBackground={state.selectedBackground} updateState={updateState} />
       </div>
+    </div>
+  );
+}
+
+function CatGrid({ active, selectedCat, selectCat }) {
+  return (
+    <div className={`cat-picker-grid ${!active ? "hidden" : ""}`} aria-label="고양이 선택">
+      {Object.entries(cats).map(([catId, cat]) => (
+        <button
+          key={catId}
+          className={`pet-card ${selectedCat === catId ? "selected" : ""}`}
+          type="button"
+          aria-label={cat.name}
+          aria-pressed={selectedCat === catId}
+          onClick={() => selectCat(catId)}
+        >
+          <img src={versioned(cat.hitFrames[0])} alt="" />
+          <strong>{cat.name}</strong>
+          <span>{selectedCat === catId ? "함께하는 중 ✓" : "선택하기"}</span>
+        </button>
+      ))}
     </div>
   );
 }

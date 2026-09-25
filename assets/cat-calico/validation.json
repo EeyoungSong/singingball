@@ -1,0 +1,158 @@
+[
+  {
+    "file": "hit/hit_01.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      190,
+      246,
+      1126,
+      1090
+    ],
+    "clear": 1167429,
+    "opaque": 742
+  },
+  {
+    "file": "hit/hit_02.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      211,
+      246,
+      1127,
+      1091
+    ],
+    "clear": 1170857,
+    "opaque": 373
+  },
+  {
+    "file": "hit/hit_03.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      202,
+      246,
+      1127,
+      1090
+    ],
+    "clear": 1171022,
+    "opaque": 493
+  },
+  {
+    "file": "hit/hit_04.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      265,
+      245,
+      1127,
+      1090
+    ],
+    "clear": 1175751,
+    "opaque": 694
+  },
+  {
+    "file": "hit/hit_05.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      256,
+      247,
+      1127,
+      1089
+    ],
+    "clear": 1178358,
+    "opaque": 609
+  },
+  {
+    "file": "hit/hit_06.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      239,
+      245,
+      1129,
+      1090
+    ],
+    "clear": 1173623,
+    "opaque": 652
+  },
+  {
+    "file": "hit/hit_07.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      202,
+      246,
+      1127,
+      1090
+    ],
+    "clear": 1171022,
+    "opaque": 493
+  },
+  {
+    "file": "hit/hit_08.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      211,
+      246,
+      1127,
+      1091
+    ],
+    "clear": 1170857,
+    "opaque": 373
+  },
+  {
+    "file": "hit/hit_09.png",
+    "width": 1254,
+    "height": 1254,
+    "bounds": [
+      190,
+      246,
+      1126,
+      1090
+    ],
+    "clear": 1167429,
+    "opaque": 742
+  },
+  {
+    "file": "walk/stand.png",
+    "width": 887,
+    "height": 1774,
+    "bounds": [
+      119,
+      843,
+      842,
+      1594
+    ],
+    "clear": 1315955,
+    "opaque": 700
+  },
+  {
+    "file": "walk/walk-a.png",
+    "width": 887,
+    "height": 1774,
+    "bounds": [
+      89,
+      892,
+      866,
+      1593
+    ],
+    "clear": 1284975,
+    "opaque": 1041
+  },
+  {
+    "file": "walk/walk-b.png",
+    "width": 887,
+    "height": 1774,
+    "bounds": [
+      120,
+      913,
+      839,
+      1594
+    ],
+    "clear": 1296403,
+    "opaque": 667
+  }
+]
